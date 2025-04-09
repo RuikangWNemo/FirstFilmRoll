@@ -325,12 +325,12 @@
   <header>
     <div class="header-slideshow">
       <!-- 轮播精选：photo2, photo11, photo12, photo14, photo17, photo23 -->
-      <div class="header-slide" style="background-image: url('images/photo2.jpg');"></div>
-      <div class="header-slide" style="background-image: url('images/photo11.jpg');"></div>
-      <div class="header-slide" style="background-image: url('images/photo12.jpg');"></div>
-      <div class="header-slide" style="background-image: url('images/photo14.jpg');"></div>
-      <div class="header-slide" style="background-image: url('images/photo17.jpg');"></div>
-      <div class="header-slide" style="background-image: url('images/photo23.jpg');"></div>
+      <div class="header-slide" style="background-image: url(https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo2.jpg);"></div>
+      <div class="header-slide" style="background-image: url(https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo11.jpg);"></div>
+      <div class="header-slide" style="background-image: url(https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo12.jpg);"></div>
+      <div class="header-slide" style="background-image: url(https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo14.jpg);"></div>
+      <div class="header-slide" style="background-image: url(https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo17.jpg);"></div>
+      <div class="header-slide" style="background-image: url(https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo23.jpg);"></div>
     </div>
     <!-- 全黑覆盖层，加载后淡出 -->
     <div class="intro-overlay"></div>
@@ -385,40 +385,40 @@
     <div class="gallery-grid">
       <!-- 精选照片：photo1, photo2, photo7, photo11, photo12, photo13, photo14, photo17, photo23, photo27, photo29, photo32 -->
       <div class="gallery-item" data-index="0">
-        <img src="images/photo1.jpg" alt="胶卷1">
+        <img src="https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo1.jpg" alt="胶卷1">
       </div>
       <div class="gallery-item" data-index="1">
-        <img src="images/photo2.jpg" alt="胶卷2">
+        <img src="https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo2.jpg" alt="胶卷2">
       </div>
       <div class="gallery-item" data-index="2">
-        <img src="images/photo7.jpg" alt="胶卷7">
+        <img src="https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo7.jpg" alt="胶卷7">
       </div>
       <div class="gallery-item" data-index="3">
-        <img src="images/photo11.jpg" alt="胶卷11">
+        <img src="https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo11.jpg" alt="胶卷11">
       </div>
       <div class="gallery-item" data-index="4">
-        <img src="images/photo12.jpg" alt="胶卷12">
+        <img src="https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo12.jpg" alt="胶卷12">
       </div>
       <div class="gallery-item" data-index="5">
-        <img src="images/photo13.jpg" alt="胶卷13">
+        <img src="https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo13.jpg" alt="胶卷13">
       </div>
       <div class="gallery-item" data-index="6">
-        <img src="images/photo14.jpg" alt="胶卷14">
+        <img src="https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo14.jpg" alt="胶卷14">
       </div>
       <div class="gallery-item" data-index="7">
-        <img src="images/photo17.jpg" alt="胶卷17">
+        <img src="https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo17.jpg" alt="胶卷17">
       </div>
       <div class="gallery-item" data-index="8">
-        <img src="images/photo23.jpg" alt="胶卷23">
+        <img src="https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo23.jpg" alt="胶卷23">
       </div>
       <div class="gallery-item" data-index="9">
-        <img src="images/photo27.jpg" alt="胶卷27">
+        <img src="https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo27.jpg" alt="胶卷27">
       </div>
       <div class="gallery-item" data-index="10">
-        <img src="images/photo29.jpg" alt="胶卷29">
+        <img src="https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo29.jpg" alt="胶卷29">
       </div>
       <div class="gallery-item" data-index="11">
-        <img src="images/photo32.jpg" alt="胶卷32">
+        <img src="https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo32.jpg" alt="胶卷32">
       </div>
     </div>
   </section>
@@ -549,23 +549,23 @@
      * 模态框大图浏览与左右导航
      * 分别支持精选胶卷与完整胶片展映（顺序独立）
      ***********************/
-    const fullFilmPhotos = [];
+     const fullFilmPhotos = [];
     for (let i = 1; i <= 37; i++) {
-      fullFilmPhotos.push(`images/photo${i}.jpg`);
+      fullFilmPhotos.push(`https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo${i}.jpg`);
     }
     const galleryPhotos = [
-      "images/photo1.jpg",
-      "images/photo2.jpg",
-      "images/photo7.jpg",
-      "images/photo11.jpg",
-      "images/photo12.jpg",
-      "images/photo13.jpg",
-      "images/photo14.jpg",
-      "images/photo17.jpg",
-      "images/photo23.jpg",
-      "images/photo27.jpg",
-      "images/photo29.jpg",
-      "images/photo32.jpg"
+      "https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo1.jpg",
+      "https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo2.jpg",
+      "https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo7.jpg",
+      "https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo11.jpg",
+      "https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo12.jpg",
+      "https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo13.jpg",
+      "https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo14.jpg",
+      "https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo17.jpg",
+      "https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo23.jpg",
+      "https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo27.jpg",
+      "https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo29.jpg",
+      "https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo32.jpg"
     ];
     let currentModalArray = [];
     let currentModalIndex = 0;
@@ -655,7 +655,7 @@
       item.classList.add('carousel-item');
       item.setAttribute('data-index', i);
       const img = document.createElement('img');
-      img.src = `images/photo${i+1}.jpg`;
+      img.src = `https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo${i+1}.jpg`;
       img.alt = `胶卷帧 ${i+1}`;
       const label = document.createElement('span');
       label.classList.add('item-number');
