@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="pageTitle">时光印记 - 巴城古街的黑白胶卷之旅</title>
+  <style>
+    /* 禁止文字被选中 */
+    * {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    /* ========= 全局重置与基础样式 ========= */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; background: #111; color: #eee; line-height: 1.6; }
+    a { text-decoration: none; color: inherit; }
+
+    /* ========= 语言切换按钮 ========= */
+    #langToggle {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background: rgba(0,0,0,0.5);
+      color: #eee;
+      border: 1px solid #eee;
+      padding: 0.3rem 0.6rem;
+      cursor: pointer;
+      z-index: 30;
+      font-size: 0.9rem;
+    }
+
+    /* ========= 头部区域：背景轮播及淡入效果 ========= */
+    header {
+      position: relative;
+      height: 100vh;
+      overflow: hidden;
+    }
+    .header-slideshow {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+    .header-slide {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      opacity: 0;
+      transition: opacity 1s ease-in-out;
+    }
+    .header-slide.active { opacity: 1; }
+    /* 初始全黑覆盖层，加载后2秒淡出 */
+    .intro-overlay {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: #000;
+      z-index: 3;
+      animation: fadeOut 2s forwards;
+    }
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; }
+    }
+    .header-overlay {
+      position: relative;
+      z-index: 4;
+      height: 100%;
+      width: 100%;
+      background: rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 0 1rem;
+    }
+    .header-overlay h1 {
+      font-size: 3rem;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      margin-bottom: 1rem;
+    }
+    .header-overlay p {
+      font-size: 1.2rem;
+      margin-bottom: 2rem;
+      max-width: 800px;
+    }
+    .header-overlay .scroll-btn {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid #eee;
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      color: #eee;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .header-overlay .scroll-btn:hover { background: rgba(255,255,255,0.4); }
+
+    /* ========= 故事叙述板块 ========= */
+    section.story {
+      padding: 3rem 2rem;
+      background: #222;
+      text-align: center;
+    }
+    section.story h2 { 
+      font-size: 2.5rem; 
+      margin-bottom: 1.5rem; 
+      letter-spacing: 2px; 
+    }
+    .story-content { 
+      max-width: 800px; 
+      margin: 0 auto; 
+      text-align: left; 
+      font-size: 1rem; 
+      line-height: 1.8; 
+    }
+    .story-content p { margin-bottom: 1rem; }
+    .story-content .bastory {
+      font-style: italic;
+      color: #ccc;
+    }
+
+    /* ========= 作品信息板块 ========= */
+    section.info {
+      padding: 2rem;
+      background: #1a1a1a;
+      text-align: center;
+      font-size: 0.95rem;
+      line-height: 1.8;
+    }
+    section.info h3 {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      letter-spacing: 1px;
+    }
+    .info-content {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: left;
+    }
+    .info-content ul { list-style: none; padding-left: 0; }
+    .info-content li { margin-bottom: 0.5rem; }
+    /* 新增拍摄设备信息 */
+    .info-equipment {
+      margin-top: 1rem;
+    }
+
+    /* ========= 精选胶卷展示（网格画廊） ========= */
+    section.gallery {
+      padding: 3rem 2rem;
+      background: #111;
+    }
+    section.gallery h2 { 
+      text-align: center; 
+      margin-bottom: 2rem; 
+      font-size: 2rem; 
+      letter-spacing: 2px; 
+    }
+    /* 固定布局：采用 4 列布局 */
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+    }
+    .gallery-item {
+      position: relative;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    .gallery-item img {
+      width: 100%;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+    .gallery-item:hover img { transform: scale(1.1); }
+
+    /* ========= 模态框（大图浏览） ========= */
+    .modal {
+      position: fixed;
+      z-index: 50;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.9);
+      opacity: 0;
+      display: none;
+      transition: opacity 0.5s ease;
+    }
+    .modal.show {
+      display: block;
+      opacity: 1;
+    }
+    .modal-content {
+      margin: 5% auto;
+      display: block;
+      max-width: 90%;
+    }
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      right: 35px;
+      color: #fff;
+      font-size: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 51;
+    }
+    .modal-prev, .modal-next {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #fff;
+      font-size: 40px;
+      font-weight: bold;
+      padding: 0 10px;
+      cursor: pointer;
+      z-index: 51;
+      user-select: none;
+    }
+    .modal-prev { left: 20px; }
+    .modal-next { right: 20px; }
+
+    /* ========= 完整胶片展示（Film Carousel） ========= */
+    .film-carousel-section {
+      padding: 3rem 2rem;
+      background: #222;
+      text-align: center;
+      position: relative;
+    }
+    .film-carousel-section h2 {
+      font-size: 2rem;
+      margin-bottom: 1.5rem;
+      letter-spacing: 2px;
+    }
+    .film-carousel {
+      margin: 0 auto;
+      position: relative;
+      width: 100%;
+      height: 320px;
+      overflow: hidden;
+      z-index: 10; /* 圆盘 z-index 较低，预览模态框在最上层 */
+    }
+    /* 模拟胶片上方的点状线 */
+    .film-carousel::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 5%;
+      right: 5%;
+      height: 10px;
+      border-top: 1px dotted #555;
+    }
+    /* 在圆盘上方和下方增加齿孔装饰 */
+    .film-sprockets {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      display: flex;
+      justify-content: space-between;
+    }
+    .film-sprockets.top {
+      top: 5px;
+    }
+    .film-sprockets.bottom {
+      bottom: 5px;
+    }
+    .film-sprocket {
+      width: 10px;
+      height: 10px;
+      background: #444;
+      border: 2px solid #222;
+      border-radius: 50%;
+    }
+    .carousel-item {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform-origin: center bottom;
+      transition: transform 0.3s ease, filter 0.3s ease;
+      cursor: pointer;
+    }
+    .carousel-item img {
+      width: 100px;
+      display: block;
+      margin: 0 auto;
+    }
+    .item-number {
+      display: block;
+      margin-top: 5px;
+      font-size: 0.8rem;
+    }
+    /* ========= 当前照片大展示框 ========= */
+    .current-display {
+      margin: 20px auto;
+      text-align: center;
+      max-width: 80%;
+      transition: opacity 1s ease;
+    }
+    .current-display img {
+      width: 100%;
+      max-width: 600px;
+      opacity: 1;
+      border: 5px solid #444;
+    }
+
+    /* ========= 响应式调整 ========= */
+    @media (max-width: 768px) {
+      .header-overlay h1 { font-size: 2rem; }
+      .header-overlay p { font-size: 1rem; }
+      section.story h2 { font-size: 2rem; }
+      .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+  </style>
+</head>
+<body>
+  <!-- 语言切换按钮 -->
+  <div id="langToggle">EN</div>
+
+  <!-- ========== 头部区域 ========= -->
+  <header>
+    <div class="header-slideshow">
+      <!-- 轮播精选：photo2, photo11, photo12, photo14, photo17, photo23 -->
+      <div class="header-slide" style="background-image: url('images/photo2.jpg');"></div>
+      <div class="header-slide" style="background-image: url('images/photo11.jpg');"></div>
+      <div class="header-slide" style="background-image: url('images/photo12.jpg');"></div>
+      <div class="header-slide" style="background-image: url('images/photo14.jpg');"></div>
+      <div class="header-slide" style="background-image: url('images/photo17.jpg');"></div>
+      <div class="header-slide" style="background-image: url('images/photo23.jpg');"></div>
+    </div>
+    <!-- 全黑覆盖层，加载后淡出 -->
+    <div class="intro-overlay"></div>
+    <div class="header-overlay">
+      <h1 data-i18n="headerTitle">时光印记</h1>
+      <p data-i18n="headerText">
+        巴城古街的石板路与斑驳古门，存留着岁月低语；我首次用胶卷捕捉那一瞬间的悸动，便将往昔定格于光影之间。
+      </p>
+      <button class="scroll-btn" onclick="document.querySelector('.gallery').scrollIntoView({behavior:'smooth'});" data-i18n="headerButton">
+        探索精选胶卷
+      </button>
+    </div>
+  </header>
+
+  <!-- ========== 故事叙述板块 ========= -->
+  <section class="story">
+    <h2 data-i18n="storyTitle">巴城古街的低语</h2>
+    <div class="story-content">
+      <p data-i18n="storyPara1">
+        位于昆山腹地的巴城古街，青石板路、古槐林立，每一块石板都在静静诉说着流逝的岁月与人情冷暖。这里保存着古城的历史记忆与市井往事，见证了时光的沉淀。
+      </p>
+      <p class="bastory" data-i18n="storyPara2">
+        那一天，我怀着既忐忑又激动的心情首次握住黑白胶卷相机。按下快门的瞬间，仿佛听见老街上时光轻语，那一刻，光影成为永恒。
+      </p>
+    </div>
+  </section>
+
+  <!-- ========== 作品信息 ========= -->
+  <section class="info">
+    <h3 data-i18n="infoTitle">作品信息</h3>
+    <div class="info-content">
+      <p><strong data-i18n="infoPhotography">Photography by:</strong> Ruikang Wang</p>
+      <p><strong data-i18n="infoFirstRoll">First B&amp;W film roll</strong> &nbsp;&nbsp; 2025 March</p>
+      <p><strong data-i18n="infoFilm">Film:</strong> KENTMERE PAN400</p>
+      <p><strong data-i18n="infoEquipment">拍摄设备:</strong> Ricoh XR-X 3P Date (1997) | 28-50mm F/3.5-4.5</p>
+      <p><strong data-i18n="infoThanks">Special Thanks to:</strong></p>
+      <ul>
+        <li>Professor Laurids Sonne</li>
+        <li>Professor Kaley Clements</li>
+        <li>Professor Charles Watson</li>
+        <li>Professor Cici Cheng</li>
+        <li>Professor Tom Rankin</li>
+        <li>Jiawen Cai</li>
+        <li>Lam Mai</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ========== 精选胶卷画廊 ========= -->
+  <section class="gallery">
+    <h2 data-i18n="galleryTitle">精选胶卷</h2>
+    <div class="gallery-grid">
+      <!-- 精选照片：photo1, photo2, photo7, photo11, photo12, photo13, photo14, photo17, photo23, photo27, photo29, photo32 -->
+      <div class="gallery-item" data-index="0">
+        <img src="images/photo1.jpg" alt="胶卷1">
+      </div>
+      <div class="gallery-item" data-index="1">
+        <img src="images/photo2.jpg" alt="胶卷2">
+      </div>
+      <div class="gallery-item" data-index="2">
+        <img src="images/photo7.jpg" alt="胶卷7">
+      </div>
+      <div class="gallery-item" data-index="3">
+        <img src="images/photo11.jpg" alt="胶卷11">
+      </div>
+      <div class="gallery-item" data-index="4">
+        <img src="images/photo12.jpg" alt="胶卷12">
+      </div>
+      <div class="gallery-item" data-index="5">
+        <img src="images/photo13.jpg" alt="胶卷13">
+      </div>
+      <div class="gallery-item" data-index="6">
+        <img src="images/photo14.jpg" alt="胶卷14">
+      </div>
+      <div class="gallery-item" data-index="7">
+        <img src="images/photo17.jpg" alt="胶卷17">
+      </div>
+      <div class="gallery-item" data-index="8">
+        <img src="images/photo23.jpg" alt="胶卷23">
+      </div>
+      <div class="gallery-item" data-index="9">
+        <img src="images/photo27.jpg" alt="胶卷27">
+      </div>
+      <div class="gallery-item" data-index="10">
+        <img src="images/photo29.jpg" alt="胶卷29">
+      </div>
+      <div class="gallery-item" data-index="11">
+        <img src="images/photo32.jpg" alt="胶卷32">
+      </div>
+    </div>
+  </section>
+
+  <!-- ========== 完整胶片展示（Film Carousel） ========= -->
+  <section class="film-carousel-section">
+    <h2 data-i18n="filmRollTitle">完整胶片展映</h2>
+    <!-- 胶片展映圆盘 -->
+    <div class="film-carousel"></div>
+    <!-- 在圆盘下方增加齿孔装饰 -->
+    <div class="film-sprockets top">
+      <div class="film-sprocket"></div>
+      <div class="film-sprocket"></div>
+      <div class="film-sprocket"></div>
+      <div class="film-sprocket"></div>
+      <div class="film-sprocket"></div>
+      <div class="film-sprocket"></div>
+      <div class="film-sprocket"></div>
+      <div class="film-sprocket"></div>
+      <div class="film-sprocket"></div>
+      <div class="film-sprocket"></div>
+    </div>
+    <div class="film-sprockets bottom">
+      <div class="film-sprocket"></div>
+      <div class="film-sprocket"></div>
+      <div class="film-sprocket"></div>
+      <div class="film-sprocket"></div>
+      <div class="film-sprocket"></div>
+      <div class="film-sprocket"></div>
+      <div class="film-sprocket"></div>
+      <div class="film-sprocket"></div>
+      <div class="film-sprocket"></div>
+      <div class="film-sprocket"></div>
+    </div>
+    <!-- 当前大展示框：显示圆盘中心照片 -->
+    <div class="current-display">
+      <img id="currentDisplayImage" src="" alt="当前胶卷">
+    </div>
+  </section>
+
+  <!-- ========== 模态框（大图浏览及左右滑动） ========= -->
+  <div id="photoModal" class="modal">
+    <span class="modal-close">&times;</span>
+    <img class="modal-content" id="modalImage">
+    <span class="modal-prev">&#10094;</span>
+    <span class="modal-next">&#10095;</span>
+  </div>
+
+  <script>
+    /***********************
+     * 语言切换相关（中英文同步）
+     ***********************/
+    const translations = {
+      zh: {
+        pageTitle: "时光印记 - 巴城古街的黑白胶卷之旅",
+        headerTitle: "时光印记",
+        headerText: "巴城古街的石板路与斑驳古门，存留着岁月低语；我首次用胶卷捕捉那一瞬间的悸动，便将往昔定格于光影之间。",
+        headerButton: "探索精选胶卷",
+        storyTitle: "巴城古街的低语",
+        storyPara1: "位于昆山腹地的巴城古街，青石板路、古槐林立，每一块石板都在静静诉说着流逝的岁月与人情冷暖。这里保存着古城的历史记忆与市井往事，见证了时光的沉淀。",
+        storyPara2: "那一天，我怀着既忐忑又激动的心情首次握住黑白胶卷相机。按下快门的瞬间，仿佛听见老街上时光轻语，那一刻，光影成为永恒。",
+        infoTitle: "作品信息",
+        infoPhotography: "摄影师:",
+        infoFirstRoll: "第一卷黑白胶卷",
+        infoFilm: "胶卷:",
+        infoEquipment: "拍摄设备:",
+        infoThanks: "特别致谢:",
+        galleryTitle: "精选胶卷",
+        filmRollTitle: "完整胶片展映"
+      },
+      en: {
+        pageTitle: "Time Imprint - The B&W Film Journey of Bacong Old Street",
+        headerTitle: "Time Imprint",
+        headerText: "The cobbled streets and weathered gates of Bacong Old Street hold the whispers of time; my first venture into film photography captured that fleeting heartbeat, preserving memories in light and shadow.",
+        headerButton: "Explore Selected Film",
+        storyTitle: "Whispers of Bacong Old Street",
+        storyPara1: "Located in the heart of Kunshan, Bacong Old Street features ancient stone roads and venerable trees. Every stone seems to quietly tell the story of bygone days and human sentiments. This place preserves the historical memory and everyday tales of the old city, bearing witness to the passage of time.",
+        storyPara2: "On that day, with both trepidation and excitement, I held my first black &amp; white film camera. The moment I pressed the shutter, it was as if I heard the gentle murmur of time along the old street — and in that instant, light and shadow became eternal.",
+        infoTitle: "Work Information",
+        infoPhotography: "Photography by:",
+        infoFirstRoll: "First B&W film roll",
+        infoFilm: "Film:",
+        infoEquipment: "Equipment:",
+        infoThanks: "Special Thanks to:",
+        galleryTitle: "Selected Film",
+        filmRollTitle: "Full Film Roll"
+      }
+    };
+    let currentLang = "zh";
+    function updateLanguage() {
+      document.querySelector("[data-i18n='pageTitle']").textContent = translations[currentLang].pageTitle;
+      document.title = translations[currentLang].pageTitle;
+      document.querySelector("[data-i18n='headerTitle']").textContent = translations[currentLang].headerTitle;
+      document.querySelector("[data-i18n='headerText']").textContent = translations[currentLang].headerText;
+      document.querySelector("[data-i18n='headerButton']").textContent = translations[currentLang].headerButton;
+      document.querySelector("[data-i18n='storyTitle']").textContent = translations[currentLang].storyTitle;
+      document.querySelector("[data-i18n='storyPara1']").textContent = translations[currentLang].storyPara1;
+      document.querySelector("[data-i18n='storyPara2']").textContent = translations[currentLang].storyPara2;
+      document.querySelector("[data-i18n='infoTitle']").textContent = translations[currentLang].infoTitle;
+      document.querySelector("[data-i18n='infoPhotography']").textContent = translations[currentLang].infoPhotography;
+      document.querySelector("[data-i18n='infoFirstRoll']").textContent = translations[currentLang].infoFirstRoll;
+      document.querySelector("[data-i18n='infoFilm']").textContent = translations[currentLang].infoFilm;
+      document.querySelector("[data-i18n='infoEquipment']").textContent = translations[currentLang].infoEquipment;
+      document.querySelector("[data-i18n='infoThanks']").textContent = translations[currentLang].infoThanks;
+      document.querySelector("[data-i18n='galleryTitle']").textContent = translations[currentLang].galleryTitle;
+      document.querySelector("[data-i18n='filmRollTitle']").textContent = translations[currentLang].filmRollTitle;
+      document.getElementById("langToggle").textContent = currentLang === "zh" ? "EN" : "中文";
+    }
+    document.getElementById("langToggle").addEventListener("click", () => {
+      currentLang = currentLang === "zh" ? "en" : "zh";
+      updateLanguage();
+    });
+    updateLanguage();
+
+    /***********************
+     * 头部轮播效果
+     ***********************/
+    const headerSlides = document.querySelectorAll('.header-slide');
+    let slideIndex = 0;
+    headerSlides[slideIndex].classList.add('active');
+    setInterval(() => {
+      headerSlides[slideIndex].classList.remove('active');
+      slideIndex = (slideIndex + 1) % headerSlides.length;
+      headerSlides[slideIndex].classList.add('active');
+    }, 4000);
+
+    /***********************
+     * 模态框大图浏览与左右导航
+     * 分别支持精选胶卷与完整胶片展映（顺序独立）
+     ***********************/
+    const fullFilmPhotos = [];
+    for (let i = 1; i <= 37; i++) {
+      fullFilmPhotos.push(`images/photo${i}.jpg`);
+    }
+    const galleryPhotos = [
+      "images/photo1.jpg",
+      "images/photo2.jpg",
+      "images/photo7.jpg",
+      "images/photo11.jpg",
+      "images/photo12.jpg",
+      "images/photo13.jpg",
+      "images/photo14.jpg",
+      "images/photo17.jpg",
+      "images/photo23.jpg",
+      "images/photo27.jpg",
+      "images/photo29.jpg",
+      "images/photo32.jpg"
+    ];
+    let currentModalArray = [];
+    let currentModalIndex = 0;
+    const modal = document.getElementById('photoModal');
+    const modalImage = document.getElementById('modalImage');
+    const modalClose = document.querySelector('.modal-close');
+    const modalPrev = document.querySelector('.modal-prev');
+    const modalNext = document.querySelector('.modal-next');
+    // 打开模态框时隐藏 film carousel 及当前大展示框
+    function openModal(index, sourceArray) {
+      currentModalArray = sourceArray;
+      currentModalIndex = index;
+      modal.style.display = "block"; 
+      modal.classList.add('show');
+      modalImage.src = currentModalArray[currentModalIndex];
+      filmCarousel.style.visibility = "hidden";
+      document.querySelector('.current-display').style.visibility = "hidden";
+    }
+    function closeModal() {
+      modal.classList.remove('show');
+      setTimeout(() => {
+         modal.style.display = "none";
+         filmCarousel.style.visibility = "visible";
+         document.querySelector('.current-display').style.visibility = "visible";
+      }, 500);
+    }
+    function showPrev() {
+      currentModalIndex = (currentModalIndex - 1 + currentModalArray.length) % currentModalArray.length;
+      modalImage.src = currentModalArray[currentModalIndex];
+      if (currentModalArray === fullFilmPhotos) {
+         currentPosition = currentModalIndex;
+         updateCarousel();
+         updateCurrentDisplay();
+      }
+    }
+    function showNext() {
+      currentModalIndex = (currentModalIndex + 1) % currentModalArray.length;
+      modalImage.src = currentModalArray[currentModalIndex];
+      if (currentModalArray === fullFilmPhotos) {
+         currentPosition = currentModalIndex;
+         updateCarousel();
+         updateCurrentDisplay();
+      }
+    }
+    modalClose.addEventListener('click', closeModal);
+    modalPrev.addEventListener('click', showPrev);
+    modalNext.addEventListener('click', showNext);
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal();
+    });
+    document.addEventListener('keydown', (e) => {
+      if (modal.classList.contains("show")) {
+        if (e.key === 'ArrowLeft') showPrev();
+        if (e.key === 'ArrowRight') showNext();
+        if (e.key === 'Escape') closeModal();
+      }
+    });
+    // 为精选画廊图片添加点击事件（使用 galleryPhotos 数组）
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    galleryItems.forEach(item => {
+      item.addEventListener('click', () => {
+        let index = parseInt(item.getAttribute("data-index"));
+        openModal(index, galleryPhotos);
+      });
+    });
+
+    /***********************
+     * 完整胶片展示（Film Carousel）——自动旋转、拖拽及收卷效果
+     * 1. 圆盘半径 500px，各帧额外偏移增大，保证中心照片充分显示且左右邻项“让开”
+     * 2. 当前居中项放大至 scale 1.6，邻近项线性过渡到 scale 1.0
+     * 3. 左右箭头及键盘操作联动滚动到对应项，同时更新下方大展示框（带渐隐渐显效果）
+     * 4. 收卷动画期间隐藏下方大展示框，不显示任何照片；收卷结束后延时 1秒再恢复自动播放
+     ***********************/
+    const filmCarousel = document.querySelector('.film-carousel');
+    const numCarouselItems = 37;
+    const totalArc = 180;
+    const angleStep = totalArc / (numCarouselItems - 1);
+    const carouselRadius = 500;
+    let currentPosition = 0;
+    let autoRotating = true;
+    const autoRotateSpeed = 0.005;
+    let globalDarken = 0;
+
+    // 动态生成完整胶片项
+    for (let i = 0; i < numCarouselItems; i++) {
+      const item = document.createElement('div');
+      item.classList.add('carousel-item');
+      item.setAttribute('data-index', i);
+      const img = document.createElement('img');
+      img.src = `images/photo${i+1}.jpg`;
+      img.alt = `胶卷帧 ${i+1}`;
+      const label = document.createElement('span');
+      label.classList.add('item-number');
+      label.textContent = i+1;
+      item.appendChild(img);
+      item.appendChild(label);
+      item.addEventListener('click', () => { openModal(i, fullFilmPhotos); });
+      filmCarousel.appendChild(item);
+    }
+    const carouselItems = document.querySelectorAll('.carousel-item');
+
+    // 当前大展示框更新（延长渐隐渐显时间为1s）
+    let currentCenterIndex = -1;
+    function updateCurrentDisplay() {
+      let newCenter = Math.round(currentPosition);
+      if (newCenter !== currentCenterIndex) {
+        currentCenterIndex = newCenter;
+        const displayImg = document.getElementById('currentDisplayImage');
+        // 渐隐效果延长至1s
+        displayImg.style.transition = "opacity 1s ease";
+        displayImg.style.opacity = 0;
+        setTimeout(() => {
+          displayImg.src = fullFilmPhotos[currentCenterIndex];
+          displayImg.style.opacity = 1;
+        }, 500);
+      }
+    }
+
+    function updateCarousel() {
+      carouselItems.forEach((item, index) => {
+        let delta = index - currentPosition;
+        let angleDeg = delta * angleStep;
+        let angleRad = angleDeg * Math.PI / 180;
+        let extraOffset = Math.abs(delta) < 1 ? (150 + (1 - Math.abs(delta)) * 150) : 150;
+        let x = (carouselRadius + extraOffset) * Math.sin(angleRad);
+        let y = (carouselRadius + extraOffset) * (1 - Math.cos(angleRad));
+        let scaleFactor = Math.abs(delta) <= 1 ? 1.6 - 0.6 * Math.abs(delta) : 1.0;
+        item.style.transform = `translate(-50%, -50%) translate(${x}px, ${-y}px) rotate(${-angleDeg}deg) scale(${scaleFactor})`;
+        item.style.zIndex = 100 - Math.round(Math.abs(delta) * 10);
+        let brightness = (1 - Math.min(Math.abs(delta) * 0.08, 0.5)) * (1 - globalDarken);
+        item.style.filter = `brightness(${brightness})`;
+      });
+      updateCurrentDisplay();
+    }
+
+    function autoRotateCarousel() {
+      if (autoRotating) {
+        currentPosition += autoRotateSpeed;
+        if (currentPosition >= numCarouselItems - 1) {
+          currentPosition = numCarouselItems - 1;
+          autoRotating = false;
+          // 延时1秒后开始收卷动画
+          setTimeout(() => {
+              startRewind();
+          }, 1000);
+        }
+      }
+      updateCarousel();
+      requestAnimationFrame(autoRotateCarousel);
+    }
+    autoRotateCarousel();
+
+    // 收卷动画：先暗化后恢复亮度，结束后延时1秒再自动旋转，同时下方大展示框隐藏于收卷期间
+    function startRewind() {
+      let start = performance.now();
+      let duration = 3000;
+      let initialPos = currentPosition;
+      document.querySelector('.current-display').style.visibility = "hidden";
+      function rewindFrame(timestamp) {
+        let progress = (timestamp - start) / duration;
+        if (progress > 1) progress = 1;
+        if (progress < 0.5) {
+          globalDarken = progress * 1.6;
+        } else {
+          globalDarken = 0.8 * (1 - (progress - 0.5) * 2);
+        }
+        currentPosition = initialPos * (1 - progress);
+        updateCarousel();
+        if (progress < 1) {
+          requestAnimationFrame(rewindFrame);
+        } else {
+          setTimeout(() => {
+            // 强制更新当前大展示框，即使回到首位
+            currentCenterIndex = -1;
+            updateCurrentDisplay();
+            document.querySelector('.current-display').style.visibility = "visible";
+            autoRotating = true;
+          }, 1000);
+        }
+      }
+      requestAnimationFrame(rewindFrame);
+    }
+
+    // 拖拽操作
+    let isDragging = false;
+    let startX;
+    let startOffset;
+    filmCarousel.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      startX = e.clientX;
+      startOffset = currentPosition;
+      autoRotating = false;
+    });
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      let dx = e.clientX - startX;
+      currentPosition = startOffset + dx * 0.02;
+      if (currentPosition < 0) currentPosition = 0;
+      if (currentPosition > numCarouselItems - 1) currentPosition = numCarouselItems - 1;
+      updateCarousel();
+    });
+    document.addEventListener('mouseup', () => {
+      if (isDragging) { isDragging = false; autoRotating = true; }
+    });
+    filmCarousel.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      startX = e.touches[0].clientX;
+      startOffset = currentPosition;
+      autoRotating = false;
+    });
+    filmCarousel.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      let dx = e.touches[0].clientX - startX;
+      currentPosition = startOffset + dx * 0.02;
+      if (currentPosition < 0) currentPosition = 0;
+      if (currentPosition > numCarouselItems - 1) currentPosition = numCarouselItems - 1;
+      updateCarousel();
+    });
+    filmCarousel.addEventListener('touchend', () => {
+      if(isDragging) { isDragging = false; autoRotating = true; }
+    });
+  </script>
+</body>
+</html>
