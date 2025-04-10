@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title data-i18n="pageTitle">时光印记 - 巴城古街的黑白胶卷之旅</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title data-i18n="pageTitle">时光印记：睿康的第一卷黑白胶片</title>
+  <!-- 使用上传的 logo 作为 favicon -->
+  <link rel="icon" href="./logo.png" type="image/png" />
   <style>
     /* 禁止文字被选中 */
     * {
@@ -27,7 +29,7 @@
       border: 1px solid #eee;
       padding: 0.3rem 0.6rem;
       cursor: pointer;
-      z-index: 30;
+      z-index: 999;
       font-size: 0.9rem;
     }
 
@@ -52,10 +54,9 @@
       transition: opacity 1s ease-in-out;
     }
     .header-slide.active { opacity: 1; }
-    /* 初始全黑覆盖层，加载后2秒淡出 */
     .intro-overlay {
       position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
+      inset: 0;
       background: #000;
       z-index: 3;
       animation: fadeOut 2s forwards;
@@ -82,11 +83,13 @@
       text-transform: uppercase;
       letter-spacing: 4px;
       margin-bottom: 1rem;
+      color: #fff;
     }
     .header-overlay p {
       font-size: 1.2rem;
       margin-bottom: 2rem;
       max-width: 800px;
+      color: #eee;
     }
     .header-overlay .scroll-btn {
       background: rgba(255,255,255,0.2);
@@ -104,11 +107,13 @@
       padding: 3rem 2rem;
       background: #222;
       text-align: center;
+      position: relative;
     }
     section.story h2 { 
       font-size: 2.5rem; 
       margin-bottom: 1.5rem; 
-      letter-spacing: 2px; 
+      letter-spacing: 2px;
+      color: #fff;
     }
     .story-content { 
       max-width: 800px; 
@@ -116,11 +121,21 @@
       text-align: left; 
       font-size: 1rem; 
       line-height: 1.8; 
+      color: #ddd;
     }
     .story-content p { margin-bottom: 1rem; }
     .story-content .bastory {
       font-style: italic;
       color: #ccc;
+    }
+    /* 签名置于故事末尾 */
+    .story-signature {
+      text-align: right;
+      margin-top: 2rem;
+    }
+    .story-signature img {
+      max-width: 120px;
+      filter: invert(1);
     }
 
     /* ========= 作品信息板块 ========= */
@@ -130,6 +145,7 @@
       text-align: center;
       font-size: 0.95rem;
       line-height: 1.8;
+      color: #eee;
     }
     section.info h3 {
       font-size: 1.8rem;
@@ -141,25 +157,20 @@
       margin: 0 auto;
       text-align: left;
     }
-    .info-content ul { list-style: none; padding-left: 0; }
-    .info-content li { margin-bottom: 0.5rem; }
-    /* 新增拍摄设备信息 */
-    .info-equipment {
-      margin-top: 1rem;
-    }
+    .info-content p { margin-bottom: 0.8rem; }
 
     /* ========= 精选胶卷展示（网格画廊） ========= */
     section.gallery {
       padding: 3rem 2rem;
       background: #111;
+      text-align: center;
     }
     section.gallery h2 { 
-      text-align: center; 
-      margin-bottom: 2rem; 
       font-size: 2rem; 
+      margin-bottom: 2rem; 
       letter-spacing: 2px; 
+      color: #fff;
     }
-    /* 固定布局：采用 4 列布局 */
     .gallery-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -180,7 +191,7 @@
     /* ========= 模态框（大图浏览） ========= */
     .modal {
       position: fixed;
-      z-index: 50;
+      z-index: 999;
       left: 0;
       top: 0;
       width: 100%;
@@ -207,7 +218,7 @@
       font-size: 40px;
       font-weight: bold;
       cursor: pointer;
-      z-index: 51;
+      z-index: 1000;
     }
     .modal-prev, .modal-next {
       position: absolute;
@@ -218,20 +229,21 @@
       font-weight: bold;
       padding: 0 10px;
       cursor: pointer;
-      z-index: 51;
+      z-index: 1000;
       user-select: none;
     }
     .modal-prev { left: 20px; }
     .modal-next { right: 20px; }
 
     /* ========= 完整胶片展示（Film Carousel） ========= */
-    .film-carousel-section {
+    section.film-carousel-section {
       padding: 3rem 2rem;
       background: #222;
       text-align: center;
       position: relative;
+      color: #fff;
     }
-    .film-carousel-section h2 {
+    section.film-carousel-section h2 {
       font-size: 2rem;
       margin-bottom: 1.5rem;
       letter-spacing: 2px;
@@ -242,9 +254,8 @@
       width: 100%;
       height: 320px;
       overflow: hidden;
-      z-index: 10; /* 圆盘 z-index 较低，预览模态框在最上层 */
+      z-index: 10;
     }
-    /* 模拟胶片上方的点状线 */
     .film-carousel::before {
       content: "";
       position: absolute;
@@ -254,7 +265,6 @@
       height: 10px;
       border-top: 1px dotted #555;
     }
-    /* 在圆盘上方和下方增加齿孔装饰 */
     .film-sprockets {
       position: absolute;
       left: 50%;
@@ -263,12 +273,8 @@
       display: flex;
       justify-content: space-between;
     }
-    .film-sprockets.top {
-      top: 5px;
-    }
-    .film-sprockets.bottom {
-      bottom: 5px;
-    }
+    .film-sprockets.top { top: 5px; }
+    .film-sprockets.bottom { bottom: 5px; }
     .film-sprocket {
       width: 10px;
       height: 10px;
@@ -294,7 +300,6 @@
       margin-top: 5px;
       font-size: 0.8rem;
     }
-    /* ========= 当前照片大展示框 ========= */
     .current-display {
       margin: 20px auto;
       text-align: center;
@@ -308,32 +313,119 @@
       border: 5px solid #444;
     }
 
-    /* ========= 艺术家陈述板块 ========= */
+    /* ========= 艺术家陈述板块：重新设计，独特背景、边框及交互效果 ========= */
     .artist-statement {
-      padding: 3rem 2rem;
-      background: #1a1a1a;
-      color: #eee;
-    }
-    .artist-statement h2 {
-      font-size: 2.5rem;
-      margin-bottom: 1.5rem;
-      text-align: center;
-      letter-spacing: 2px;
-    }
-    .artist-statement article {
+      padding: 4rem 2rem;
+      background: linear-gradient(135deg, #1a1a1a, #111);
+      color: #ddd;
       max-width: 800px;
       margin: 0 auto;
       text-align: left;
-      font-size: 1rem;
-      line-height: 1.8;
+      border-top: 3px solid #555;
+      border-bottom: 3px solid #555;
+      margin-bottom: 3rem;
+    }
+    .artist-statement h2 {
+      text-align: center;
+      font-size: 2.8rem;
+      margin-bottom: 1.5rem;
+      letter-spacing: 3px;
+      color: #fff;
     }
     .artist-statement h3 {
-      font-size: 2rem;
-      margin-top: 1.5rem;
-      margin-bottom: 1rem;
+      font-size: 2.2rem;
+      margin-top: 2rem;
+      margin-bottom: 0.5rem;
+      color: #ffa;
+      border-bottom: 1px solid #555;
+      padding-bottom: 0.3rem;
     }
-    .artist-statement p {
+    .artist-content {
+      font-family: Georgia, serif;
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: #ccc;
+    }
+    .artist-content p {
+      margin-bottom: 1.2rem;
+      transition: transform 0.3s, color 0.3s;
+    }
+    .artist-content p:hover {
+      color: #fff;
+      transform: translateX(5px);
+    }
+
+    /* ========= 特别致谢 ========= */
+    section.thanks {
+      padding: 2rem;
+      background: #1a1a1a;
+      text-align: center;
+      color: #eee;
+    }
+    section.thanks h3 {
+      font-size: 1.8rem;
       margin-bottom: 1rem;
+      letter-spacing: 1px;
+    }
+    .thanks-content ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 auto;
+      max-width: 400px;
+    }
+    .thanks-content li {
+      margin-bottom: 0.5rem;
+      transition: transform 0.3s, color 0.3s;
+      cursor: pointer;
+    }
+    .thanks-content li:hover {
+      transform: scale(1.05);
+      color: #fff;
+    }
+
+    /* ========= 底部签名与版权 ========= */
+    footer {
+      background: #111;
+      text-align: center;
+      padding: 2rem 1rem;
+      color: #aaa;
+    }
+    .footer-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .footer-content p {
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+    /* 此处保留 footer 版权文字，仅保留 Logo favicon 显示在标签区 */
+
+    /* 新增：header 内签名样式 */
+    /* 默认桌面样式 */
+    .header-signature {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    }
+
+    /* 使用 clamp() 设定最小、理想和最大值，实现响应式大小 */
+    .header-signature img {
+    width: clamp(150px, 30vw, 240px); /* 最小60px，理想值为20%视口宽度，最大120px */
+    height: auto;
+    filter: invert(1) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
+    }
+
+    .footer-signature {
+    margin-bottom: 10px; /* 调整上下间距 */
+    text-align: center;
+    }
+
+    .footer-signature img {
+    width: clamp(200px, 60vw, 500px); /* 最小60px、理想10vw、最大120px */
+    height: auto;
+    filter: invert(1); /* 如签名为黑色，可用 invert(1) 使其在深色背景下更清晰 */
     }
 
     /* ========= 响应式调整 ========= */
@@ -349,10 +441,9 @@
   <!-- 语言切换按钮 -->
   <div id="langToggle">EN</div>
 
-  <!-- ========== 头部区域 ========= -->
+  <!-- ========== 头部区域 ========== -->
   <header>
     <div class="header-slideshow">
-      <!-- 轮播精选：photo2, photo11, photo12, photo14, photo17, photo23 -->
       <div class="header-slide" style="background-image: url(https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo2.jpg);"></div>
       <div class="header-slide" style="background-image: url(https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo11.jpg);"></div>
       <div class="header-slide" style="background-image: url(https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo12.jpg);"></div>
@@ -360,20 +451,23 @@
       <div class="header-slide" style="background-image: url(https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo17.jpg);"></div>
       <div class="header-slide" style="background-image: url(https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo23.jpg);"></div>
     </div>
-    <!-- 全黑覆盖层，加载后淡出 -->
     <div class="intro-overlay"></div>
     <div class="header-overlay">
-      <h1 data-i18n="headerTitle">时光印记</h1>
+      <h1 data-i18n="headerTitle">时光印记：我的的第一卷黑白胶片</h1>
       <p data-i18n="headerText">
         巴城古街的石板路与斑驳古门，存留着岁月低语；我首次用胶卷捕捉那一瞬间的悸动，便将往昔定格于光影之间。
       </p>
       <button class="scroll-btn" onclick="document.querySelector('.gallery').scrollIntoView({behavior:'smooth'});" data-i18n="headerButton">
         探索精选胶卷
       </button>
+          <!-- 新增签名容器 -->
+      <div class="header-signature">
+        <img src="./signature.png" alt="Signature">
+      </div>
     </div>
   </header>
 
-  <!-- ========== 故事叙述板块 ========= -->
+  <!-- ========== 故事叙述板块 ========== -->
   <section class="story">
     <h2 data-i18n="storyTitle">巴城古街的低语</h2>
     <div class="story-content">
@@ -386,32 +480,24 @@
     </div>
   </section>
 
-  <!-- ========== 作品信息 ========= -->
+  <!-- ========== 作品信息板块 ========== -->
   <section class="info">
     <h3 data-i18n="infoTitle">作品信息</h3>
     <div class="info-content">
-      <p><strong data-i18n="infoPhotography">Photography by:</strong> Ruikang Wang</p>
-      <p><strong data-i18n="infoFirstRoll">First B&amp;W film roll</strong> &nbsp;&nbsp; 2025 March</p>
-      <p><strong data-i18n="infoFilm">Film:</strong> KENTMERE PAN400</p>
+      <p><strong data-i18n="infoRoll">第一卷黑白胶片</strong></p>
+      <p><strong data-i18n="infoPhotographer">摄影师：王睿康</strong></p>
+      <p><strong data-i18n="infoProjectTime">拍摄时间：2025年3月</strong></p>
+      <p><strong data-i18n="infoFilm">胶卷:</strong> KENTMERE PAN400</p>
       <p><strong data-i18n="infoEquipment">拍摄设备:</strong> Ricoh XR-X 3P Date (1997) | 28-50mm F/3.5-4.5</p>
-      <p><strong data-i18n="infoThanks">Special Thanks to:</strong></p>
-      <ul>
-        <li>Professor Laurids Sonne</li>
-        <li>Professor Kaley Clements</li>
-        <li>Professor Charles Watson</li>
-        <li>Professor Cici Cheng</li>
-        <li>Professor Tom Rankin</li>
-        <li>Jiawen Cai</li>
-        <li>Lam Mai</li>
-      </ul>
+      <p><strong data-i18n="infoLocation">地点：巴城老街，巴城镇，昆山，苏州，江苏省，中国</strong></p>
     </div>
   </section>
 
-  <!-- ========== 精选胶卷画廊 ========= -->
+  <!-- ========== 精选胶卷画廊 ========== -->
   <section class="gallery">
     <h2 data-i18n="galleryTitle">精选胶卷</h2>
     <div class="gallery-grid">
-      <!-- 精选照片：photo1, photo2, photo7, photo11, photo12, photo13, photo14, photo17, photo23, photo27, photo29, photo32 -->
+      <!-- 共有12张精选胶卷 -->
       <div class="gallery-item" data-index="0">
         <img src="https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo1.jpg" alt="胶卷1">
       </div>
@@ -451,12 +537,10 @@
     </div>
   </section>
 
-  <!-- ========== 完整胶片展示（Film Carousel） ========= -->
+  <!-- ========== 完整胶片展示（Film Carousel） ========== -->
   <section class="film-carousel-section">
     <h2 data-i18n="filmRollTitle">完整胶片展映</h2>
-    <!-- 胶片展映圆盘 -->
     <div class="film-carousel"></div>
-    <!-- 在圆盘下方增加齿孔装饰 -->
     <div class="film-sprockets top">
       <div class="film-sprocket"></div>
       <div class="film-sprocket"></div>
@@ -481,13 +565,12 @@
       <div class="film-sprocket"></div>
       <div class="film-sprocket"></div>
     </div>
-    <!-- 当前大展示框：显示圆盘中心照片 -->
     <div class="current-display">
       <img id="currentDisplayImage" src="" alt="当前胶卷">
     </div>
   </section>
 
-  <!-- ========== 模态框（大图浏览及左右滑动） ========= -->
+  <!-- ========== 模态框（大图浏览及左右滑动） ========== -->
   <div id="photoModal" class="modal">
     <span class="modal-close">&times;</span>
     <img class="modal-content" id="modalImage">
@@ -495,19 +578,18 @@
     <span class="modal-next">&#10095;</span>
   </div>
 
-  <!-- ========== 艺术家陈述板块 ========= -->
+  <!-- ========== 艺术家陈述板块（重新设计：独特背景、不同字体、交互效果） ========== -->
   <section class="artist-statement">
-    <!-- 中文版本 -->
+    <!-- 此处根据全局语言切换显示对应版本 -->
     <div class="artist-content artist-content-zh">
-      <h2>艺术家陈述</h2>
+      <h2>摄影师陈述</h2>
       <article>
-        <h3>艺术家陈述</h3>
+        <h3>关于影像与感知</h3>
         <p>对我来说，摄影是一种放慢脚步去真正观察的方式。这卷黑白胶卷是我第一次接触胶片摄影。在拍摄的过程中，我不只是学习如何使用一台相机，我也在学习如何去“看”、如何去“等待”、以及如何去相信那些不确定性的过程。</p>
         <p>在这之前，我习惯使用无反数码相机拍照。拍摄时按下快门几乎是本能动作，我常常在一次外拍中拍摄上千张照片。比如，在杜克大学校园附近的 Lakewood 小学做纪录项目时，我曾在两小时内拍下了超过 2700 张照片。虽然最后挑选出的照片效果不错，但我那时相信“量变产生质变”，拍得越多，选出来的好照片就越多。</p>
         <p>而胶卷摄影完全改变了我的这种思维方式。每一张照片都成了一种抉择。我不得不停下来，更深入地观察场景与被摄对象，去思考拍摄的意义与方式。手动调整快门速度与光圈的过程，也让我第一次真正意识到摄影的“机械性”与“感知性”之间的联系。通过这卷胶卷，我开始理解到，摄影不仅关乎拍什么，也关乎你是以怎样的状态去拍的。</p>
         <p>我被摄影中那些微妙、易逝的瞬间所吸引，比如空间的质感、双手的节奏、日常中被忽略的诗意。这些照片并不只是对现实的记录，更是关于“在场”的实践，是一种存在于当下的姿态。在拍摄中，我试图不过度安排、不急于构图，而是选择留白与等待，让场景自然展开。</p>
         <p>这第一卷胶卷让我明白，有意义的影像并不始于相机，而是始于我们的眼睛、身体，以及我们对周围世界的回应与倾听。</p>
-
         <h3>第一卷胶卷的故事：巴城、三轮车与共同完成的旅程</h3>
         <p>这组照片拍摄于中国江苏昆山的一个古镇——巴城。那天，我受我的导师 Kaley Clements 教授的邀请，参加了一场摄影工作坊，由 Laurids Sonne 教授组织并主持。在巴城的街巷中，我也与 Charles Watson 教授同行，他鼓励我从更深的层次思考一张照片的意义——不仅仅是画面好不好看，而是它背后是否有故事与价值。在旅程的最后阶段，Cici Cheng 教授与 Tom Rankin 教授也加入了我们。</p>
         <p>而真正的冒险，也从那一刻开始。</p>
@@ -522,15 +604,14 @@
     </div>
     <!-- 英文版本 -->
     <div class="artist-content artist-content-en">
-      <h2>Artist Statement</h2>
+      <h2>Photographer Statement</h2>
       <article>
-        <h3>Artist Statement</h3>
+        <h3>On Image and Perception</h3>
         <p>Photography, to me, is about slowing down enough to truly notice. With this first roll of black-and-white film, I wasn’t just learning how to use a camera. I was learning how to see, how to wait, and how to trust the process of uncertainty.</p>
         <p>Before this project, I was used to shooting with mirrorless digital cameras. It was normal for me to take hundreds or even thousands of images in a short span of time. For instance, during a documentary project at Lakewood Elementary School near Duke University, I took over 2,700 photos in two hours. The final selections turned out well, but my process was rooted in abundance rather than intention. I thought quantity could lead to quality.</p>
         <p>Shooting on film challenged that mindset completely. Every frame became a decision. I had to pause, observe, and engage more deeply with the subject and the environment. Adjusting shutter speed and aperture manually required me to understand the mechanics of photography, not just rely on instinct. Through this process, I began to appreciate not only what I was capturing, but how and why I was doing it.</p>
         <p>I am drawn to photography as a way of recording quiet, fleeting gestures. I try to capture the texture of lived spaces, the rhythm of working hands, and the poetry found in ordinary routines. These images are not simply about documentation. They are about presence. About being fully there in the moment, without rushing or over-composing, and allowing the scene to breathe on its own.</p>
         <p>This first roll taught me that meaningful photography does not begin with the camera. It begins with how you see, how you move, and how you choose to listen to your surroundings.</p>
-
         <h3>The Story of the First Roll: Bacheng, the Tricycle, and a Shared Journey</h3>
         <p>This series was photographed in Bacheng, a centuries-old water town in Kunshan, China. I was invited by my mentor, Professor Kaley Clements, to join a photography workshop organized by Professor Laurids Sonne. During the journey, I was also guided by Professor Charles Watson, who encouraged me to think more carefully about what makes an image meaningful. He helped me consider not just the aesthetic appeal of an image, but the story and human value behind it. Later, Professors Cici Cheng and Tom Rankin joined us for the final part of the trip.</p>
         <p>That is when the real adventure began.</p>
@@ -545,95 +626,172 @@
     </div>
   </section>
 
+  <!-- ========== 特别致谢 ========= -->
+  <section class="thanks">
+    <h3 data-i18n="infoThanks">Special Thanks to</h3>
+    <div class="thanks-content">
+      <ul>
+        <li><a href="https://scholars.duke.edu/person/laurids.sonne" target="_blank">Professor Laurids Sonne</a></li>
+        <li><a href="https://scholars.duke.edu/person/kaley.clements" target="_blank">Professor Kaley Clements</a></li>
+        <li><a href="https://scholars.duke.edu/person/charley.watson/teaching" target="_blank">Professor Charles Watson</a></li>
+        <li><a href="https://scholars.duke.edu/person/cici.cheng" target="_blank">Professor Cici Cheng</a></li>
+        <li><a href="https://scholars.duke.edu/person/tsr2" target="_blank">Professor Tom Rankin</a></li>
+        <li><a href="https://cn.linkedin.com/in/jiawen-cai-443575150" target="_blank">Jiawen Cai</a></li>
+        <li>Lam Mai</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ========== 底部版权 ========= -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-signature">
+        <img src="./signature.png" alt="Signature">
+      </div>
+      <p>© 2025 Ruikang Wang. All rights reserved.</p>
+    </div>
+  </footer>
+
   <script>
-    /***********************
-     * 语言切换相关（中英文同步）
-     ***********************/
+    /***********************************************************
+     * 1. 多语言文本数据
+     ***********************************************************/
     const translations = {
       zh: {
-        pageTitle: "时光印记 - 巴城古街的黑白胶卷之旅",
-        headerTitle: "时光印记",
+        pageTitle: "时光印记：睿康的第一卷黑白胶片",
+        headerTitle: "时光印记：我的第一卷黑白胶片",
         headerText: "巴城古街的石板路与斑驳古门，存留着岁月低语；我首次用胶卷捕捉那一瞬间的悸动，便将往昔定格于光影之间。",
         headerButton: "探索精选胶卷",
         storyTitle: "巴城古街的低语",
         storyPara1: "位于昆山腹地的巴城古街，青石板路、古槐林立，每一块石板都在静静诉说着流逝的岁月与人情冷暖。这里保存着古城的历史记忆与市井往事，见证了时光的沉淀。",
         storyPara2: "那一天，我怀着既忐忑又激动的心情首次握住黑白胶卷相机。按下快门的瞬间，仿佛听见老街上时光轻语，那一刻，光影成为永恒。",
         infoTitle: "作品信息",
-        infoPhotography: "摄影师:",
-        infoFirstRoll: "第一卷黑白胶卷",
+        infoRoll: "第一卷黑白胶片",
+        infoPhotographer: "摄影师：王睿康",
+        infoProjectTime: "拍摄时间：2025年3月",
         infoFilm: "胶卷:",
         infoEquipment: "拍摄设备:",
-        infoThanks: "特别致谢:",
+        infoLocation: "地点：巴城老街，巴城镇，昆山，苏州，江苏省，中国",
         galleryTitle: "精选胶卷",
-        filmRollTitle: "完整胶片展映"
+        filmRollTitle: "完整胶片展映",
+        infoThanks: "Special Thanks to"
       },
       en: {
-        pageTitle: "Time Imprint - The B&W Film Journey of Bacong Old Street",
-        headerTitle: "Time Imprint",
-        headerText: "The cobbled streets and weathered gates of Bacong Old Street hold the whispers of time; my first venture into film photography captured that fleeting heartbeat, preserving memories in light and shadow.",
+        pageTitle: "Time Imprint: My First B&W Film Roll",
+        headerTitle: "Time Imprint: My First B&W Film Roll",
+        headerText: "The cobbled streets and weathered gates of Bacheng Old Street hold whispers of time; my first venture into film photography captured that fleeting heartbeat, preserving memories in light and shadow.",
         headerButton: "Explore Selected Film",
-        storyTitle: "Whispers of Bacong Old Street",
-        storyPara1: "Located in the heart of Kunshan, Bacong Old Street features ancient stone roads and venerable trees. Every stone seems to quietly tell the story of bygone days and human sentiments. This place preserves the historical memory and everyday tales of the old city, bearing witness to the passage of time.",
-        storyPara2: "On that day, with both trepidation and excitement, I held my first black &amp; white film camera. The moment I pressed the shutter, it was as if I heard the gentle murmur of time along the old street — and in that instant, light and shadow became eternal.",
-        infoTitle: "Work Information",
-        infoPhotography: "Photography by:",
-        infoFirstRoll: "First B&W film roll",
+        storyTitle: "Whispers of Bacheng Old Street",
+        storyPara1: "Located in the heart of Kunshan, Bacheng Old Street features ancient stone roads and venerable trees. Each stone quietly tells stories of bygone days. This place preserves a wealth of history and everyday tales, bearing witness to the passage of time.",
+        storyPara2: "On that day, with both trepidation and excitement, I held my first black & white film camera. The moment I pressed the shutter, it felt as if I heard time whisper along the old street, capturing a moment in light and shadow.",
+        infoTitle: "Work Info",
+        infoRoll: "First B&W film roll",
+        infoPhotographer: "Photography by: Ruikang Wang",
+        infoProjectTime: "Project time: March 2025",
         infoFilm: "Film:",
         infoEquipment: "Equipment:",
-        infoThanks: "Special Thanks to:",
+        infoLocation: "Location: Bacheng Old Street, Bacheng Town, Kunshan, Suzhou, Jiangsu Province, China",
         galleryTitle: "Selected Film",
-        filmRollTitle: "Full Film Roll"
+        filmRollTitle: "Full Film Roll",
+        infoThanks: "Special Thanks to"
       }
     };
+
     let currentLang = "zh";
     function updateLanguage() {
-      document.querySelector("[data-i18n='pageTitle']").textContent = translations[currentLang].pageTitle;
       document.title = translations[currentLang].pageTitle;
-      document.querySelector("[data-i18n='headerTitle']").textContent = translations[currentLang].headerTitle;
-      document.querySelector("[data-i18n='headerText']").textContent = translations[currentLang].headerText;
-      document.querySelector("[data-i18n='headerButton']").textContent = translations[currentLang].headerButton;
-      document.querySelector("[data-i18n='storyTitle']").textContent = translations[currentLang].storyTitle;
-      document.querySelector("[data-i18n='storyPara1']").textContent = translations[currentLang].storyPara1;
-      document.querySelector("[data-i18n='storyPara2']").textContent = translations[currentLang].storyPara2;
-      document.querySelector("[data-i18n='infoTitle']").textContent = translations[currentLang].infoTitle;
-      document.querySelector("[data-i18n='infoPhotography']").textContent = translations[currentLang].infoPhotography;
-      document.querySelector("[data-i18n='infoFirstRoll']").textContent = translations[currentLang].infoFirstRoll;
-      document.querySelector("[data-i18n='infoFilm']").textContent = translations[currentLang].infoFilm;
-      document.querySelector("[data-i18n='infoEquipment']").textContent = translations[currentLang].infoEquipment;
-      document.querySelector("[data-i18n='infoThanks']").textContent = translations[currentLang].infoThanks;
-      document.querySelector("[data-i18n='galleryTitle']").textContent = translations[currentLang].galleryTitle;
-      document.querySelector("[data-i18n='filmRollTitle']").textContent = translations[currentLang].filmRollTitle;
+      const elements = document.querySelectorAll("[data-i18n]");
+      elements.forEach(el => {
+        const key = el.getAttribute("data-i18n");
+        el.textContent = translations[currentLang][key];
+      });
       document.getElementById("langToggle").textContent = currentLang === "zh" ? "EN" : "中文";
-      // 切换艺术家陈述板块的显示（采用 block 显示方式）
-      document.querySelector('.artist-content-zh').style.display = currentLang === "zh" ? "block" : "none";
-      document.querySelector('.artist-content-en').style.display = currentLang === "en" ? "block" : "none";
+      // 控制艺术家陈述显示对应语言版本
+      if (currentLang === "zh") {
+        document.querySelector(".artist-content-zh").style.display = "block";
+        document.querySelector(".artist-content-en").style.display = "none";
+      } else {
+        document.querySelector(".artist-content-zh").style.display = "none";
+        document.querySelector(".artist-content-en").style.display = "block";
+      }
     }
     document.getElementById("langToggle").addEventListener("click", () => {
-      currentLang = currentLang === "zh" ? "en" : "zh";
+      currentLang = (currentLang === "zh") ? "en" : "zh";
       updateLanguage();
     });
     updateLanguage();
 
-    /***********************
-     * 头部轮播效果
-     ***********************/
-    const headerSlides = document.querySelectorAll('.header-slide');
+    /***********************************************************
+     * 2. 头部轮播效果
+     ***********************************************************/
+    const headerSlides = document.querySelectorAll(".header-slide");
     let slideIndex = 0;
-    headerSlides[slideIndex].classList.add('active');
+    headerSlides[slideIndex].classList.add("active");
     setInterval(() => {
-      headerSlides[slideIndex].classList.remove('active');
+      headerSlides[slideIndex].classList.remove("active");
       slideIndex = (slideIndex + 1) % headerSlides.length;
-      headerSlides[slideIndex].classList.add('active');
+      headerSlides[slideIndex].classList.add("active");
     }, 4000);
 
-    /***********************
-     * 模态框大图浏览与左右导航
-     * 分别支持精选胶卷与完整胶片展映（顺序独立）
-     ***********************/
-    const fullFilmPhotos = [];
-    for (let i = 1; i <= 37; i++) {
-      fullFilmPhotos.push(`https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo${i}.jpg`);
+    /***********************************************************
+     * 3. 模态框大图浏览与左右导航
+     ***********************************************************/
+    const modal = document.getElementById("photoModal");
+    const modalImage = document.getElementById("modalImage");
+    const modalClose = document.querySelector(".modal-close");
+    const modalPrev = document.querySelector(".modal-prev");
+    const modalNext = document.querySelector(".modal-next");
+    let currentModalIndex = 0;
+    let currentModalArray = [];
+    function openModal(index, array) {
+      currentModalIndex = index;
+      currentModalArray = array;
+      modal.style.display = "block";
+      modal.classList.add("show");
+      modalImage.src = currentModalArray[currentModalIndex];
+      filmCarousel.style.visibility = "hidden";
+      document.querySelector(".current-display").style.visibility = "hidden";
     }
+    function closeModal() {
+      modal.classList.remove("show");
+      setTimeout(() => {
+        modal.style.display = "none";
+        filmCarousel.style.visibility = "visible";
+        document.querySelector(".current-display").style.visibility = "visible";
+      }, 300);
+    }
+    function showPrev() {
+      currentModalIndex = (currentModalIndex - 1 + currentModalArray.length) % currentModalArray.length;
+      modalImage.src = currentModalArray[currentModalIndex];
+      if (currentModalArray === fullFilmPhotos) {
+        currentPosition = currentModalIndex;
+        updateCarousel();
+        updateCurrentDisplay();
+      }
+    }
+    function showNext() {
+      currentModalIndex = (currentModalIndex + 1) % currentModalArray.length;
+      modalImage.src = currentModalArray[currentModalIndex];
+      if (currentModalArray === fullFilmPhotos) {
+        currentPosition = currentModalIndex;
+        updateCarousel();
+        updateCurrentDisplay();
+      }
+    }
+    modalClose.addEventListener("click", closeModal);
+    modalPrev.addEventListener("click", showPrev);
+    modalNext.addEventListener("click", showNext);
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closeModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (modal.classList.contains("show")) {
+        if (e.key === "ArrowLeft") showPrev();
+        if (e.key === "ArrowRight") showNext();
+        if (e.key === "Escape") closeModal();
+      }
+    });
+    const galleryItems = document.querySelectorAll(".gallery-item");
     const galleryPhotos = [
       "https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo1.jpg",
       "https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo2.jpg",
@@ -648,114 +806,49 @@
       "https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo29.jpg",
       "https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo32.jpg"
     ];
-    let currentModalArray = [];
-    let currentModalIndex = 0;
-    const modal = document.getElementById('photoModal');
-    const modalImage = document.getElementById('modalImage');
-    const modalClose = document.querySelector('.modal-close');
-    const modalPrev = document.querySelector('.modal-prev');
-    const modalNext = document.querySelector('.modal-next');
-    // 打开模态框时隐藏 film carousel 及当前大展示框
-    function openModal(index, sourceArray) {
-      currentModalArray = sourceArray;
-      currentModalIndex = index;
-      modal.style.display = "block"; 
-      modal.classList.add('show');
-      modalImage.src = currentModalArray[currentModalIndex];
-      filmCarousel.style.visibility = "hidden";
-      document.querySelector('.current-display').style.visibility = "hidden";
-    }
-    function closeModal() {
-      modal.classList.remove('show');
-      setTimeout(() => {
-         modal.style.display = "none";
-         filmCarousel.style.visibility = "visible";
-         document.querySelector('.current-display').style.visibility = "visible";
-      }, 500);
-    }
-    function showPrev() {
-      currentModalIndex = (currentModalIndex - 1 + currentModalArray.length) % currentModalArray.length;
-      modalImage.src = currentModalArray[currentModalIndex];
-      if (currentModalArray === fullFilmPhotos) {
-         currentPosition = currentModalIndex;
-         updateCarousel();
-         updateCurrentDisplay();
-      }
-    }
-    function showNext() {
-      currentModalIndex = (currentModalIndex + 1) % currentModalArray.length;
-      modalImage.src = currentModalArray[currentModalIndex];
-      if (currentModalArray === fullFilmPhotos) {
-         currentPosition = currentModalIndex;
-         updateCarousel();
-         updateCurrentDisplay();
-      }
-    }
-    modalClose.addEventListener('click', closeModal);
-    modalPrev.addEventListener('click', showPrev);
-    modalNext.addEventListener('click', showNext);
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
-    });
-    document.addEventListener('keydown', (e) => {
-      if (modal.classList.contains("show")) {
-        if (e.key === 'ArrowLeft') showPrev();
-        if (e.key === 'ArrowRight') showNext();
-        if (e.key === 'Escape') closeModal();
-      }
-    });
-    // 为精选画廊图片添加点击事件（使用 galleryPhotos 数组）
-    const galleryItems = document.querySelectorAll('.gallery-item');
     galleryItems.forEach(item => {
-      item.addEventListener('click', () => {
-        let index = parseInt(item.getAttribute("data-index"));
-        openModal(index, galleryPhotos);
-      });
+      let index = parseInt(item.getAttribute("data-index"));
+      item.addEventListener("click", () => { openModal(index, galleryPhotos); });
     });
 
-    /***********************
-     * 完整胶片展示（Film Carousel）——自动旋转、拖拽及收卷效果
-     * 1. 圆盘半径 500px，各帧额外偏移增大，保证中心照片充分显示且左右邻项“让开”
-     * 2. 当前居中项放大至 scale 1.6，邻近项线性过渡到 scale 1.0
-     * 3. 左右箭头及键盘操作联动滚动到对应项，同时更新下方大展示框（带渐隐渐显效果）
-     * 4. 收卷动画期间隐藏下方大展示框，不显示任何照片；收卷结束后延时1秒再恢复自动播放
-     ***********************/
-    const filmCarousel = document.querySelector('.film-carousel');
-    const numCarouselItems = 37;
+    /***********************************************************
+     * 4. 完整胶片展示（Film Carousel）：自动旋转、拖拽及收卷效果
+     ***********************************************************/
+    const filmCarousel = document.querySelector(".film-carousel");
+    const fullFilmPhotos = [];
+    for (let i = 1; i <= 37; i++) {
+      fullFilmPhotos.push(`https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo${i}.jpg`);
+    }
+    const numItems = 37;
     const totalArc = 180;
-    const angleStep = totalArc / (numCarouselItems - 1);
+    const angleStep = totalArc / (numItems - 1);
     const carouselRadius = 500;
     let currentPosition = 0;
     let autoRotating = true;
     const autoRotateSpeed = 0.005;
     let globalDarken = 0;
-
-    // 动态生成完整胶片项
-    for (let i = 0; i < numCarouselItems; i++) {
-      const item = document.createElement('div');
-      item.classList.add('carousel-item');
-      item.setAttribute('data-index', i);
-      const img = document.createElement('img');
-      img.src = `https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo${i+1}.jpg`;
+    for (let i = 0; i < numItems; i++) {
+      const item = document.createElement("div");
+      item.classList.add("carousel-item");
+      item.setAttribute("data-index", i);
+      const img = document.createElement("img");
+      img.src = fullFilmPhotos[i];
       img.alt = `胶卷帧 ${i+1}`;
-      const label = document.createElement('span');
-      label.classList.add('item-number');
-      label.textContent = i+1;
       item.appendChild(img);
+      const label = document.createElement("span");
+      label.classList.add("item-number");
+      label.textContent = i + 1;
       item.appendChild(label);
-      item.addEventListener('click', () => { openModal(i, fullFilmPhotos); });
+      item.addEventListener("click", () => { openModal(i, fullFilmPhotos); });
       filmCarousel.appendChild(item);
     }
-    const carouselItems = document.querySelectorAll('.carousel-item');
-
-    // 当前大展示框更新（延长渐隐渐显时间为1s）
+    const carouselItems = document.querySelectorAll(".carousel-item");
     let currentCenterIndex = -1;
     function updateCurrentDisplay() {
       let newCenter = Math.round(currentPosition);
       if (newCenter !== currentCenterIndex) {
         currentCenterIndex = newCenter;
-        const displayImg = document.getElementById('currentDisplayImage');
-        // 渐隐效果延长至1s
+        const displayImg = document.getElementById("currentDisplayImage");
         displayImg.style.transition = "opacity 1s ease";
         displayImg.style.opacity = 0;
         setTimeout(() => {
@@ -764,7 +857,6 @@
         }, 500);
       }
     }
-
     function updateCarousel() {
       carouselItems.forEach((item, index) => {
         let delta = index - currentPosition;
@@ -781,30 +873,24 @@
       });
       updateCurrentDisplay();
     }
-
-    function autoRotateCarousel() {
+    function autoRotate() {
       if (autoRotating) {
         currentPosition += autoRotateSpeed;
-        if (currentPosition >= numCarouselItems - 1) {
-          currentPosition = numCarouselItems - 1;
+        if (currentPosition >= numItems - 1) {
+          currentPosition = numItems - 1;
           autoRotating = false;
-          // 延时1秒后开始收卷动画
-          setTimeout(() => {
-              startRewind();
-          }, 1000);
+          setTimeout(() => { startRewind(); }, 1000);
         }
       }
       updateCarousel();
-      requestAnimationFrame(autoRotateCarousel);
+      requestAnimationFrame(autoRotate);
     }
-    autoRotateCarousel();
-
-    // 收卷动画：先暗化后恢复亮度，结束后延时1秒再自动旋转，同时下方大展示框隐藏于收卷期间
+    autoRotate();
     function startRewind() {
       let start = performance.now();
       let duration = 3000;
       let initialPos = currentPosition;
-      document.querySelector('.current-display').style.visibility = "hidden";
+      document.querySelector(".current-display").style.visibility = "hidden";
       function rewindFrame(timestamp) {
         let progress = (timestamp - start) / duration;
         if (progress > 1) progress = 1;
@@ -819,54 +905,66 @@
           requestAnimationFrame(rewindFrame);
         } else {
           setTimeout(() => {
-            // 强制更新当前大展示框，即使回到首位
             currentCenterIndex = -1;
             updateCurrentDisplay();
-            document.querySelector('.current-display').style.visibility = "visible";
+            document.querySelector(".current-display").style.visibility = "visible";
             autoRotating = true;
           }, 1000);
         }
       }
       requestAnimationFrame(rewindFrame);
     }
-
-    // 拖拽操作
     let isDragging = false;
-    let startX;
-    let startOffset;
-    filmCarousel.addEventListener('mousedown', (e) => {
+    let startX, startOffset;
+    filmCarousel.addEventListener("mousedown", (e) => {
       isDragging = true;
       startX = e.clientX;
       startOffset = currentPosition;
       autoRotating = false;
     });
-    document.addEventListener('mousemove', (e) => {
+    document.addEventListener("mousemove", (e) => {
       if (!isDragging) return;
       let dx = e.clientX - startX;
       currentPosition = startOffset + dx * 0.02;
-      if (currentPosition < 0) currentPosition = 0;
-      if (currentPosition > numCarouselItems - 1) currentPosition = numCarouselItems - 1;
+      currentPosition = Math.max(0, Math.min(currentPosition, numItems - 1));
       updateCarousel();
     });
-    document.addEventListener('mouseup', () => {
+    document.addEventListener("mouseup", () => {
       if (isDragging) { isDragging = false; autoRotating = true; }
     });
-    filmCarousel.addEventListener('touchstart', (e) => {
+    filmCarousel.addEventListener("touchstart", (e) => {
       isDragging = true;
       startX = e.touches[0].clientX;
       startOffset = currentPosition;
       autoRotating = false;
     });
-    filmCarousel.addEventListener('touchmove', (e) => {
+    filmCarousel.addEventListener("touchmove", (e) => {
       if (!isDragging) return;
       let dx = e.touches[0].clientX - startX;
       currentPosition = startOffset + dx * 0.02;
-      if (currentPosition < 0) currentPosition = 0;
-      if (currentPosition > numCarouselItems - 1) currentPosition = numCarouselItems - 1;
+      currentPosition = Math.max(0, Math.min(currentPosition, numItems - 1));
       updateCarousel();
     });
-    filmCarousel.addEventListener('touchend', () => {
-      if(isDragging) { isDragging = false; autoRotating = true; }
+    filmCarousel.addEventListener("touchend", () => {
+      if (isDragging) { isDragging = false; autoRotating = true; }
+    });
+
+    /***********************************************************
+     * 5. 艺术家陈述区域交互效果：当段落进入视口时放大、高亮
+     ***********************************************************/
+    const statementParagraphs = document.querySelectorAll(".artist-statement .artist-content p");
+    const options = { root: null, rootMargin: "0px", threshold: 0.6 };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("active-paragraph");
+        } else {
+          entry.target.classList.remove("active-paragraph");
+        }
+      });
+    }, options);
+    statementParagraphs.forEach(p => {
+      observer.observe(p);
     });
   </script>
 </body>
