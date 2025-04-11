@@ -16,7 +16,14 @@
     }
     /* ========= 全局重置与基础样式 ========= */
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; background: #111; color: #eee; line-height: 1.6; }
+    body { 
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; 
+      background: #111; 
+      color: #eee; 
+      line-height: 1.6; 
+      /* 隐藏默认鼠标指针 */
+      cursor: none;
+    }
     a { text-decoration: none; color: inherit; }
 
     /* ========= 语言切换按钮 ========= */
@@ -32,7 +39,50 @@
       z-index: 999;
       font-size: 0.9rem;
     }
+    /* ========= 音频控制按钮 ========= */
+    #audioToggle {
+      position: fixed;
+      top: 10px;
+      right: 80px;
+      background: rgba(0,0,0,0.5);
+      color: #eee;
+      border: 1px solid #eee;
+      padding: 0.3rem 0.6rem;
+      cursor: pointer;
+      z-index: 100001;
+      font-size: 0.9rem;
+    }
 
+    /* ========= 初始交互覆盖层（用于提示用户点击音频按钮） ========= */
+    #interactionOverlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      z-index: 9999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-size: 1.5rem;
+      text-align: center;
+      animation: flash 3s infinite;
+    }
+    @keyframes flash {
+      0% { opacity: 1; }
+      50% { opacity: 0.8; }
+      100% { opacity: 1; }
+    }
+    #interactionOverlay.fade-out {
+      animation: fadeOutOverlay 1s forwards;
+    }
+    @keyframes fadeOutOverlay {
+      from { opacity: 1; }
+      to { opacity: 0; visibility: hidden; }
+    }
+    
     /* ========= 头部区域：背景轮播及淡入效果 ========= */
     header {
       position: relative;
@@ -128,7 +178,6 @@
       font-style: italic;
       color: #ccc;
     }
-    /* 签名置于故事末尾 */
     .story-signature {
       text-align: right;
       margin-top: 2rem;
@@ -313,7 +362,7 @@
       border: 5px solid #444;
     }
 
-    /* ========= 艺术家陈述板块：重新设计，独特背景、边框及交互效果 ========= */
+    /* ========= 艺术家陈述板块 ========= */
     .artist-statement {
       padding: 4rem 2rem;
       background: linear-gradient(135deg, #1a1a1a, #111);
@@ -398,34 +447,46 @@
       margin-top: 1rem;
       font-size: 0.9rem;
     }
-    /* 此处保留 footer 版权文字，仅保留 Logo favicon 显示在标签区 */
-
-    /* 新增：header 内签名样式 */
-    /* 默认桌面样式 */
     .header-signature {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 5;
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 5;
     }
-
-    /* 使用 clamp() 设定最小、理想和最大值，实现响应式大小 */
     .header-signature img {
-    width: clamp(150px, 30vw, 240px); /* 最小60px，理想值为20%视口宽度，最大120px */
-    height: auto;
-    filter: invert(1) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
+      width: clamp(150px, 30vw, 240px);
+      height: auto;
+      filter: invert(1) drop-shadow(0 4px 10px rgba(0, 0, 0, 0.5));
     }
-
     .footer-signature {
-    margin-bottom: 10px; /* 调整上下间距 */
-    text-align: center;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+    .footer-signature img {
+      width: clamp(200px, 60vw, 500px);
+      height: auto;
+      filter: invert(1);
     }
 
-    .footer-signature img {
-    width: clamp(200px, 60vw, 500px); /* 最小60px、理想10vw、最大120px */
-    height: auto;
-    filter: invert(1); /* 如签名为黑色，可用 invert(1) 使其在深色背景下更清晰 */
+    /* ========= 自定义鼠标光标 ========= */
+    .custom-cursor {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 20px;
+      height: 20px;
+      background: #fff;
+      border-radius: 50%;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease, background 0.1s ease;
+      z-index: 10000;
+      mix-blend-mode: difference;
+    }
+    .custom-cursor.hover {
+      transform: translate(-50%, -50%) scale(1.5);
+      background: #f00;
     }
 
     /* ========= 响应式调整 ========= */
@@ -438,8 +499,21 @@
   </style>
 </head>
 <body>
+  <!-- 初始交互覆盖层（提示点击音频按钮解除静音） -->
+  <div id="interactionOverlay" data-i18n="audioGuide">点击右上角按钮开启声音</div>
+
+  <!-- 音频标签 -->
+  <audio id="rewindAudio" src="audios/Rewind.mp3" preload="auto"></audio>
+  <audio id="shutterAudio" src="audios/Shutter.mp3" preload="auto"></audio>
+  <audio id="clickAudio" src="audios/click.mp3" preload="auto"></audio>
+  <audio id="BGM" src="audios/BGM.mp3" preload="auto" loop></audio>
+
   <!-- 语言切换按钮 -->
   <div id="langToggle">EN</div>
+  <!-- 音频控制按钮 -->
+  <div id="audioToggle"></div>
+  <!-- 自定义光标 -->
+  <div class="custom-cursor"></div>
 
   <!-- ========== 头部区域 ========== -->
   <header>
@@ -453,16 +527,15 @@
     </div>
     <div class="intro-overlay"></div>
     <div class="header-overlay">
-      <h1 data-i18n="headerTitle">时光印记：我的的第一卷黑白胶片</h1>
+      <h1 data-i18n="headerTitle">时光印记：我的第一卷黑白胶片</h1>
       <p data-i18n="headerText">
         巴城古街的石板路与斑驳古门，存留着岁月低语；我首次用胶卷捕捉那一瞬间的悸动，便将往昔定格于光影之间。
       </p>
       <button class="scroll-btn" onclick="document.querySelector('.gallery').scrollIntoView({behavior:'smooth'});" data-i18n="headerButton">
         探索精选胶卷
       </button>
-          <!-- 新增签名容器 -->
       <div class="header-signature">
-        <img src="./signature.png" alt="Signature">
+        <img src="https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/signature.png" alt="Signature">
       </div>
     </div>
   </header>
@@ -497,7 +570,6 @@
   <section class="gallery">
     <h2 data-i18n="galleryTitle">精选胶卷</h2>
     <div class="gallery-grid">
-      <!-- 共有12张精选胶卷 -->
       <div class="gallery-item" data-index="0">
         <img src="https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo1.jpg" alt="胶卷1">
       </div>
@@ -537,7 +609,7 @@
     </div>
   </section>
 
-  <!-- ========== 完整胶片展示（Film Carousel） ========== -->
+  <!-- ========== 完整胶片展示（Film Carousel） ========= -->
   <section class="film-carousel-section">
     <h2 data-i18n="filmRollTitle">完整胶片展映</h2>
     <div class="film-carousel"></div>
@@ -570,7 +642,7 @@
     </div>
   </section>
 
-  <!-- ========== 模态框（大图浏览及左右滑动） ========== -->
+  <!-- ========== 模态框（大图浏览及左右滑动） ========= -->
   <div id="photoModal" class="modal">
     <span class="modal-close">&times;</span>
     <img class="modal-content" id="modalImage">
@@ -578,9 +650,8 @@
     <span class="modal-next">&#10095;</span>
   </div>
 
-  <!-- ========== 艺术家陈述板块（重新设计：独特背景、不同字体、交互效果） ========== -->
+  <!-- ========== 艺术家陈述板块 ========= -->
   <section class="artist-statement">
-    <!-- 此处根据全局语言切换显示对应版本 -->
     <div class="artist-content artist-content-zh">
       <h2>摄影师陈述</h2>
       <article>
@@ -602,7 +673,6 @@
         <p>这，是我的第一卷胶卷。但更重要的是，这是我第一次真正用影像去记录一段信任、一种学习、一种“慢下来并去看见”的共同体验。</p>
       </article>
     </div>
-    <!-- 英文版本 -->
     <div class="artist-content artist-content-en">
       <h2>Photographer Statement</h2>
       <article>
@@ -619,7 +689,7 @@
         <p>But there was a problem. The tricycle’s seat was too short.</p>
         <p>So, Tom and I set off on an impromptu mission to solve it. First, we found a local welder who extended the seat post using a steel pipe. But the new pipe was too thin to be stable. We needed reinforcement. After wandering through narrow streets, we found a bamboo weaving shop. Inside, an artisan enthusiastically helped us find a wooden rod to insert into the pipe for extra strength. He worked with great care, hand-carving and fitting the piece. In the end, he refused to take any money. Instead, we offered him a small souvenir: a five-dollar bill I had exchanged back at Duke. He smiled, held the bill up like a prize, and laughed. Tom smiled too. It was a simple moment of human connection that I will never forget.</p>
         <p>That repaired tricycle became the vehicle, both literally and metaphorically, for the photos I took that day. We wandered slowly through the town, watching the light shift across bricks and rooftops, capturing glimpses of people living their lives. I was not thinking about perfection. I was thinking about presence, about witnessing, and about sharing a moment with a place and its people.</p>
-        <p>Before Tom left Kunshan, he reached into his pocket and handed me a folded twenty-dollar bill. He told me to use it to get something more for photography. I looked at it, paused, and said, "This isn’t just twenty dollars. This is a piece of art. A masterpiece." We both laughed. In that short exchange, I felt his kindness, his spirit, and his genuine love for both documentary and art. He was not just giving money. He was passing along something deeper.</p>
+        <p>Before Tom left Kunshan, he reached into his pocket and handed me a folded twenty-dollar bill. He told me to use it to get something more for photography. I looked at it, paused, and said, "This isn’t just twenty dollars. This is a piece of art. A masterpiece." We both laughed. In that short exchange, I felt his kindness, his spirit, and his genuine love for both documentary and art. He was not just giving money; he was passing along something deeper.</p>
         <p>These photographs are not staged or arranged. They are fragments of real life, gathered in the natural flow of a day that blended documentation, collaboration, and quiet improvisation.</p>
         <p>This is my first roll of film. But more than that, it is a record of trust, shared learning, and what becomes possible when you slow down and truly pay attention.</p>
       </article>
@@ -638,6 +708,7 @@
         <li><a href="https://scholars.duke.edu/person/tsr2" target="_blank">Professor Tom Rankin</a></li>
         <li><a href="https://cn.linkedin.com/in/jiawen-cai-443575150" target="_blank">Jiawen Cai</a></li>
         <li>Lam Mai</li>
+        <li>Hanxi Bao (for the background audio)</li>
       </ul>
     </div>
   </section>
@@ -646,7 +717,7 @@
   <footer>
     <div class="footer-content">
       <div class="footer-signature">
-        <img src="./signature.png" alt="Signature">
+        <img src="https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/signature.png" alt="Signature">
       </div>
       <p>© 2025 Ruikang Wang. All rights reserved.</p>
     </div>
@@ -654,8 +725,13 @@
 
   <script>
     /***********************************************************
-     * 1. 多语言文本数据
+     * 全局音频及语言设置相关变量与函数
      ***********************************************************/
+    // 默认静音模式：音频初始状态设为“全部静音”
+    let audioMode = 1;  // 0: 全部播放, 1: 全部静音, 2: 背景静音（仅音效播放）, 3: 音效静音（仅背景播放）
+    let effectsMuted = false;
+    const fadeDuration = 2000;  // 淡入淡出的时间：2000ms
+
     const translations = {
       zh: {
         pageTitle: "时光印记：睿康的第一卷黑白胶片",
@@ -674,7 +750,9 @@
         infoLocation: "地点：巴城老街，巴城镇，昆山，苏州，江苏省，中国",
         galleryTitle: "精选胶卷",
         filmRollTitle: "完整胶片展映",
-        infoThanks: "Special Thanks to"
+        infoThanks: "Special Thanks to",
+        audioModes: ["全部播放", "全部静音", "背景静音", "音效静音"],
+        audioGuide: "点击右上角按钮开启声音"
       },
       en: {
         pageTitle: "Time Imprint: My First B&W Film Roll",
@@ -684,7 +762,7 @@
         storyTitle: "Whispers of Bacheng Old Street",
         storyPara1: "Located in the heart of Kunshan, Bacheng Old Street features ancient stone roads and venerable trees. Each stone quietly tells stories of bygone days. This place preserves a wealth of history and everyday tales, bearing witness to the passage of time.",
         storyPara2: "On that day, with both trepidation and excitement, I held my first black & white film camera. The moment I pressed the shutter, it felt as if I heard time whisper along the old street, capturing a moment in light and shadow.",
-        infoTitle: "Work Info",
+        infoTitle: "Work Information",
         infoRoll: "First B&W film roll",
         infoPhotographer: "Photography by: Ruikang Wang",
         infoProjectTime: "Project time: March 2025",
@@ -693,19 +771,28 @@
         infoLocation: "Location: Bacheng Old Street, Bacheng Town, Kunshan, Suzhou, Jiangsu Province, China",
         galleryTitle: "Selected Film",
         filmRollTitle: "Full Film Roll",
-        infoThanks: "Special Thanks to"
+        infoThanks: "Special Thanks to",
+        audioModes: ["Unmute All", "Mute All", "Mute Background", "Mute Effects"],
+        audioGuide: "Click the top-right audio button to enable sound"
       }
     };
 
-    let currentLang = "zh";
+    // 根据浏览器语言自动设置当前语言
+    let browserLang = navigator.language || navigator.userLanguage;
+    let currentLang = browserLang.toLowerCase().startsWith("zh") ? "zh" : "en";
+
     function updateLanguage() {
       document.title = translations[currentLang].pageTitle;
-      const elements = document.querySelectorAll("[data-i18n]");
-      elements.forEach(el => {
+      document.querySelectorAll("[data-i18n]").forEach(el => {
         const key = el.getAttribute("data-i18n");
         el.textContent = translations[currentLang][key];
       });
       document.getElementById("langToggle").textContent = currentLang === "zh" ? "EN" : "中文";
+      // 更新初始覆盖层提示文字
+      const overlay = document.getElementById("interactionOverlay");
+      if (overlay) {
+        overlay.textContent = translations[currentLang].audioGuide;
+      }
       // 控制艺术家陈述显示对应语言版本
       if (currentLang === "zh") {
         document.querySelector(".artist-content-zh").style.display = "block";
@@ -715,14 +802,128 @@
         document.querySelector(".artist-content-en").style.display = "block";
       }
     }
-    document.getElementById("langToggle").addEventListener("click", () => {
-      currentLang = (currentLang === "zh") ? "en" : "zh";
-      updateLanguage();
-    });
-    updateLanguage();
+
+    // 音频淡入淡出函数
+    function fadeBgmTo(targetVolume, duration) {
+      const bgmAudio = document.getElementById("BGM");
+      if (!bgmAudio) return;
+      const initialVolume = bgmAudio.volume;
+      const delta = targetVolume - initialVolume;
+      const startTime = performance.now();
+      function animate(time) {
+        let progress = (time - startTime) / duration;
+        if (progress > 1) progress = 1;
+        bgmAudio.volume = initialVolume + delta * progress;
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+
+    function updateAudioSettings() {
+      const bgmAudio = document.getElementById("BGM");
+      // 当状态为 0（全部播放）或 3（仅音效静音）时，BGM 应该播放
+      let targetVolume = (audioMode === 0 || audioMode === 3) ? 1 : 0;
+      if (bgmAudio) {
+        fadeBgmTo(targetVolume, fadeDuration);
+        // 如果需要播放且当前未播放，则尝试自动播放
+        if (targetVolume > 0 && bgmAudio.paused) {
+          bgmAudio.play().catch(err => console.error("BGM 播放错误:", err));
+        }
+      }
+      // 设置音效是否静音（此处直接赋值，不做淡入淡出）
+      if (audioMode === 0) {
+        effectsMuted = false;
+      } else if (audioMode === 1) {
+        effectsMuted = true;
+      } else if (audioMode === 2) {
+        effectsMuted = false;
+      } else if (audioMode === 3) {
+        effectsMuted = true;
+      }
+      updateAudioToggleLabel();
+    }
+
+    function updateAudioToggleLabel() {
+      const audioToggleBtn = document.getElementById("audioToggle");
+      if (audioToggleBtn) {
+        audioToggleBtn.textContent = translations[currentLang].audioModes[audioMode];
+      }
+    }
 
     /***********************************************************
-     * 2. 头部轮播效果
+     * DOMContentLoaded 统一初始化
+     ***********************************************************/
+    document.addEventListener("DOMContentLoaded", () => {
+      // 初始化语言与音频按钮文本
+      updateLanguage();
+      updateAudioToggleLabel();
+
+      // 尝试自动播放背景音乐（部分浏览器需要用户交互触发）
+      const bgmAudio = document.getElementById("BGM");
+      if (bgmAudio) {
+        bgmAudio.pause(); // 初始默认静音状态
+      }
+
+      // 语言切换按钮事件
+      document.getElementById("langToggle").addEventListener("click", () => {
+        currentLang = (currentLang === "zh") ? "en" : "zh";
+        updateLanguage();
+        updateAudioToggleLabel();
+      });
+
+      // 音频控制按钮事件
+      const audioToggleBtn = document.getElementById("audioToggle");
+      if (audioToggleBtn) {
+        audioToggleBtn.addEventListener("click", (e) => {
+          e.stopPropagation(); // 防止触发全局点击音效
+          // 如果当前为静音状态（音频模式1），则直接切换到全部播放（模式0），同时移除覆盖层
+          if (audioMode === 1) {
+            audioMode = 0;
+            const overlay = document.getElementById("interactionOverlay");
+            if (overlay) {
+              overlay.classList.add("fade-out");
+              setTimeout(() => {
+                overlay.remove();
+              }, 1000);
+            }
+          } else {
+            audioMode = (audioMode + 1) % 4;
+          }
+          updateAudioSettings();
+        });
+      }
+
+      // 自定义光标逻辑
+      const cursor = document.querySelector(".custom-cursor");
+      document.addEventListener("mousemove", (e) => {
+        cursor.style.top = e.clientY + "px";
+        cursor.style.left = e.clientX + "px";
+      });
+      const addHoverClass = () => cursor.classList.add("hover");
+      const removeHoverClass = () => cursor.classList.remove("hover");
+      const clickableSelectors = "a, button, .clickable, .carousel-item";
+      document.querySelectorAll(clickableSelectors).forEach(el => {
+        el.addEventListener("mouseenter", addHoverClass);
+        el.addEventListener("mouseleave", removeHoverClass);
+      });
+    });
+
+    /***********************************************************
+     * 全局点击事件：播放 click.mp3 （音效受 effectsMuted 控制）
+     ***********************************************************/
+    document.addEventListener("click", function(e) {
+      const clickAudio = document.getElementById("clickAudio");
+      if (clickAudio && !effectsMuted) {
+        clickAudio.currentTime = 0;
+        clickAudio.volume = 0.2;
+        clickAudio.play().catch(err => console.error("click.mp3 播放错误:", err));
+      }
+    });
+
+    /***********************************************************
+     * 头部轮播效果
      ***********************************************************/
     const headerSlides = document.querySelectorAll(".header-slide");
     let slideIndex = 0;
@@ -734,7 +935,7 @@
     }, 4000);
 
     /***********************************************************
-     * 3. 模态框大图浏览与左右导航
+     * 模态框大图浏览与左右导航
      ***********************************************************/
     const modal = document.getElementById("photoModal");
     const modalImage = document.getElementById("modalImage");
@@ -812,9 +1013,21 @@
     });
 
     /***********************************************************
-     * 4. 完整胶片展示（Film Carousel）：自动旋转、拖拽及收卷效果
+     * 完整胶片展示（Film Carousel）：自动旋转、拖拽及收卷效果（含音频逻辑）
      ***********************************************************/
     const filmCarousel = document.querySelector(".film-carousel");
+    let filmCarouselVolume = 1.0;
+    if (filmCarousel) {
+      const carouselObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          filmCarouselVolume = entry.intersectionRatio;
+          console.log("FilmCarousel volume factor:", filmCarouselVolume);
+        });
+      }, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+      carouselObserver.observe(filmCarousel);
+    } else {
+      console.error("未找到 .film-carousel 元素!");
+    }
     const fullFilmPhotos = [];
     for (let i = 1; i <= 37; i++) {
       fullFilmPhotos.push(`https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll@main/images/photo${i}.jpg`);
@@ -848,6 +1061,14 @@
       let newCenter = Math.round(currentPosition);
       if (newCenter !== currentCenterIndex) {
         currentCenterIndex = newCenter;
+        const shutterAudio = document.getElementById("shutterAudio");
+        if (shutterAudio && !effectsMuted) {
+          shutterAudio.currentTime = 0;
+          shutterAudio.volume = filmCarouselVolume;
+          setTimeout(() => {
+            shutterAudio.play().catch(err => console.error("快门音播放错误:", err));
+          }, 540);
+        }
         const displayImg = document.getElementById("currentDisplayImage");
         displayImg.style.transition = "opacity 1s ease";
         displayImg.style.opacity = 0;
@@ -887,6 +1108,12 @@
     }
     autoRotate();
     function startRewind() {
+      const rewindAudio = document.getElementById("rewindAudio");
+      if (rewindAudio && !effectsMuted) {
+        rewindAudio.currentTime = 0;
+        rewindAudio.volume = filmCarouselVolume;
+        rewindAudio.play().catch(err => console.error("倒带音播放错误:", err));
+      }
       let start = performance.now();
       let duration = 3000;
       let initialPos = currentPosition;
@@ -930,7 +1157,10 @@
       updateCarousel();
     });
     document.addEventListener("mouseup", () => {
-      if (isDragging) { isDragging = false; autoRotating = true; }
+      if (isDragging) { 
+        isDragging = false; 
+        autoRotating = true; 
+      }
     });
     filmCarousel.addEventListener("touchstart", (e) => {
       isDragging = true;
@@ -946,11 +1176,14 @@
       updateCarousel();
     });
     filmCarousel.addEventListener("touchend", () => {
-      if (isDragging) { isDragging = false; autoRotating = true; }
+      if (isDragging) { 
+        isDragging = false; 
+        autoRotating = true; 
+      }
     });
 
     /***********************************************************
-     * 5. 艺术家陈述区域交互效果：当段落进入视口时放大、高亮
+     * 艺术家陈述区域交互效果：当段落进入视口时放大、高亮
      ***********************************************************/
     const statementParagraphs = document.querySelectorAll(".artist-statement .artist-content p");
     const options = { root: null, rootMargin: "0px", threshold: 0.6 };
@@ -963,9 +1196,7 @@
         }
       });
     }, options);
-    statementParagraphs.forEach(p => {
-      observer.observe(p);
-    });
+    statementParagraphs.forEach(p => { observer.observe(p); });
   </script>
 </body>
 </html>
