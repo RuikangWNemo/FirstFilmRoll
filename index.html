@@ -240,7 +240,7 @@
     /* ========= 模态框（大图浏览） ========= */
     .modal {
       position: fixed;
-      z-index: 999;
+      z-index: 100002;
       left: 0;
       top: 0;
       width: 100%;
@@ -267,7 +267,7 @@
       font-size: 40px;
       font-weight: bold;
       cursor: pointer;
-      z-index: 1000;
+      z-index: 100002;
     }
     .modal-prev, .modal-next {
       position: absolute;
@@ -278,7 +278,7 @@
       font-weight: bold;
       padding: 0 10px;
       cursor: pointer;
-      z-index: 1000;
+      z-index: 100002;
       user-select: none;
     }
     .modal-prev { left: 20px; }
@@ -481,7 +481,7 @@
       pointer-events: none;
       transform: translate(-50%, -50%);
       transition: transform 0.1s ease, background 0.1s ease;
-      z-index: 10000;
+      z-index: 1000000;
       mix-blend-mode: difference;
     }
     .custom-cursor.hover {
