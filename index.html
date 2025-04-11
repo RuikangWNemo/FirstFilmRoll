@@ -700,16 +700,7 @@
   <section class="thanks">
     <h3 data-i18n="infoThanks">Special Thanks to</h3>
     <div class="thanks-content">
-      <ul>
-        <li><a href="https://scholars.duke.edu/person/laurids.sonne" target="_blank">Professor Laurids Sonne</a></li>
-        <li><a href="https://scholars.duke.edu/person/kaley.clements" target="_blank">Professor Kaley Clements</a></li>
-        <li><a href="https://scholars.duke.edu/person/charley.watson/teaching" target="_blank">Professor Charles Watson</a></li>
-        <li><a href="https://scholars.duke.edu/person/cici.cheng" target="_blank">Professor Cici Cheng</a></li>
-        <li><a href="https://scholars.duke.edu/person/tsr2" target="_blank">Professor Tom Rankin</a></li>
-        <li><a href="https://cn.linkedin.com/in/jiawen-cai-443575150" target="_blank">Jiawen Cai</a></li>
-        <li>Lam Mai</li>
-        <li>Hanxi Bao (for the background audio)</li>
-      </ul>
+      <ul id="thanksList"></ul>
     </div>
   </section>
 
@@ -750,7 +741,17 @@
         infoLocation: "地点：巴城老街，巴城镇，昆山，苏州，江苏省，中国",
         galleryTitle: "精选胶卷",
         filmRollTitle: "完整胶片展映",
-        infoThanks: "Special Thanks to",
+        infoThanks: "特别鸣谢",
+        specialThanks: [
+          '<li><a href="https://scholars.duke.edu/person/laurids.sonne" target="_blank">Laurids Sonne 教授</a></li>',
+          '<li><a href="https://scholars.duke.edu/person/kaley.clements" target="_blank">Kaley Clements 教授</a></li>',
+          '<li><a href="https://scholars.duke.edu/person/charley.watson/teaching" target="_blank">Charles Watson 教授</a></li>',
+          '<li><a href="https://scholars.duke.edu/person/cici.cheng" target="_blank">Cici Cheng 教授</a></li>',
+          '<li><a href="https://scholars.duke.edu/person/tsr2" target="_blank">Tom Rankin 教授</a></li>',
+          '<li><a href="https://cn.linkedin.com/in/jiawen-cai-443575150" target="_blank">蔡Jiawen 老师</a></li>',
+          '<li>Lam Mai</li>',
+          '<li>包韩兮 (背景音频)</li>'
+        ],
         audioModes: ["全部播放", "全部静音", "背景静音", "音效静音"],
         audioGuide: "点击右上角按钮开启声音"
       },
@@ -772,6 +773,16 @@
         galleryTitle: "Selected Film",
         filmRollTitle: "Full Film Roll",
         infoThanks: "Special Thanks to",
+        specialThanks: [
+          '<li><a href="https://scholars.duke.edu/person/laurids.sonne" target="_blank">Professor Laurids Sonne</a></li>',
+          '<li><a href="https://scholars.duke.edu/person/kaley.clements" target="_blank">Professor Kaley Clements</a></li>',
+          '<li><a href="https://scholars.duke.edu/person/charley.watson/teaching" target="_blank">Professor Charles Watson</a></li>',
+          '<li><a href="https://scholars.duke.edu/person/cici.cheng" target="_blank">Professor Cici Cheng</a></li>',
+          '<li><a href="https://scholars.duke.edu/person/tsr2" target="_blank">Professor Tom Rankin</a></li>',
+          '<li><a href="https://cn.linkedin.com/in/jiawen-cai-443575150" target="_blank">Jiawen Cai</a></li>',
+          '<li>Lam Mai</li>',
+          '<li>Hanxi Bao (for the background audio)</li>'
+        ],
         audioModes: ["Unmute All", "Mute All", "Mute Background", "Mute Effects"],
         audioGuide: "Click the top-right audio button to enable sound"
       }
@@ -788,11 +799,19 @@
         el.textContent = translations[currentLang][key];
       });
       document.getElementById("langToggle").textContent = currentLang === "zh" ? "EN" : "中文";
+      
       // 更新初始覆盖层提示文字
       const overlay = document.getElementById("interactionOverlay");
       if (overlay) {
         overlay.textContent = translations[currentLang].audioGuide;
       }
+      
+      // 更新特别致谢的名单
+      const thanksList = document.getElementById("thanksList");
+      if (thanksList) {
+        thanksList.innerHTML = translations[currentLang].specialThanks.join("");
+      }
+      
       // 控制艺术家陈述显示对应语言版本
       if (currentLang === "zh") {
         document.querySelector(".artist-content-zh").style.display = "block";
