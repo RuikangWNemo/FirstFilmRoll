@@ -432,6 +432,57 @@
       color: #fff;
     }
 
+    /* 新增：视频部分样式 */
+    .video-feature {
+    padding: 4rem 1rem;
+    background: #111;
+    color: #eee;
+    text-align: center;
+    }
+    .video-feature h2 {
+    font-size: 2.2rem;
+    letter-spacing: 2px;
+    margin-bottom: 0.8rem;
+    }
+    .video-description {
+    font-size: 0.95rem;
+    color: #ccc;
+    margin-bottom: 1rem;
+    }
+    .video-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    }
+    .responsive-video {
+    max-height: 80vh;
+    height: auto;
+    width: auto;
+    pointer-events: none;
+    z-index: 1;
+    filter: brightness(1.05) contrast(1.05);
+    }
+    .dreamy-frame::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, transparent 60%, rgba(0, 0, 0, 0.9) 100%);
+    z-index: 2;
+    pointer-events: none;
+    filter: blur(40px);
+    }
+    .section-divider {
+    height: 2px;
+    width: 80%;
+    margin: 3rem auto;
+    background: linear-gradient(to right, transparent, #aaa, transparent);
+    opacity: 0.5;
+    }
+
+
+
     /* ========= 底部签名与版权 ========= */
     footer {
       background: #111;
@@ -696,6 +747,22 @@
     </div>
   </section>
 
+  <!-- ========== 3D视频 ========= -->
+  <section class="video-feature">
+    <h2 data-i18n="modeling3DTitle" style="font-size:2.2rem; letter-spacing:2px; margin-bottom:0.8rem;">数字化三维巴城</h2>
+    <p data-i18n="videoSubtext" style="font-size:1rem; color:#aaa; max-width:600px; margin: 0 auto 2rem auto;">
+      沉浸式感受古镇风貌，三维空间中的步履声、砖瓦影，带你重新发现摄影背后的立体世界。
+    </p>
+    <div class="video-description" data-i18n="videoDescription"></div>
+    <div class="video-container dreamy-frame">
+      <video id="lazyVideo" muted loop autoplay playsinline class="responsive-video" poster="./video_poster.jpg">
+        <source data-src="https://cdn.jsdelivr.net/gh/RuikangWNemo/FirstFilmRoll/3DScanning.mp4" type="video/mp4">
+        您的浏览器不支持 video 标签。
+      </video>
+  </section>
+  <div class="section-divider"></div>
+
+  
   <!-- ========== 特别致谢 ========= -->
   <section class="thanks">
     <h3 data-i18n="infoThanks">Special Thanks to</h3>
@@ -741,6 +808,9 @@
         infoLocation: "地点：巴城老街，巴城镇，昆山，苏州，江苏省，中国",
         galleryTitle: "精选胶卷",
         filmRollTitle: "完整胶片展映",
+        modeling3DTitle: "数字化三维巴城",
+        videoSubtext: "沉浸式感受古镇风貌，三维空间中的步履声、砖瓦影，带你重新发现摄影背后的立体世界。",
+        videoDescription: "请观看视频，体验数字化三维巴城带来的沉浸式空间感受。",
         infoThanks: "特别鸣谢",
         specialThanks: [
           '<li><a href="https://scholars.duke.edu/person/laurids.sonne" target="_blank">Laurids Sonne 教授</a></li>',
@@ -773,6 +843,10 @@
         galleryTitle: "Selected Film",
         filmRollTitle: "Full Film Roll",
         infoThanks: "Special Thanks to",
+
+        modeling3DTitle: "Digitized 3D Bacheng",
+        videoSubtext: "Immerse yourself in the old town’s charm with three-dimensional space, where the sounds of footsteps and the play of light on bricks and tiles reveal a new perspective behind photography.",
+        videoDescription: "Please watch the video to experience the immersive three-dimensional space of Bacheng.",
         specialThanks: [
           '<li><a href="https://scholars.duke.edu/person/laurids.sonne" target="_blank">Professor Laurids Sonne</a></li>',
           '<li><a href="https://scholars.duke.edu/person/kaley.clements" target="_blank">Professor Kaley Clements</a></li>',
@@ -927,6 +1001,26 @@
         el.addEventListener("mouseenter", addHoverClass);
         el.addEventListener("mouseleave", removeHoverClass);
       });
+
+      var lazyVideo = document.getElementById('lazyVideo');
+        if("IntersectionObserver" in window) {
+            let observer = new IntersectionObserver(function(entries, observer) {
+            entries.forEach(function(entry) {
+                if(entry.isIntersecting) {
+                let source = lazyVideo.querySelector('source');
+                source.src = source.dataset.src;  // 将 data-src 数据赋给 src
+                lazyVideo.load();
+                observer.unobserve(lazyVideo);
+                }
+            });
+            });
+            observer.observe(lazyVideo);
+        } else {
+            // 如果不支持 IntersectionObserver，直接加载视频
+            let source = lazyVideo.querySelector('source');
+            source.src = source.dataset.src;
+            lazyVideo.load();
+        }
     });
 
     /***********************************************************
